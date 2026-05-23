@@ -46,6 +46,15 @@ import service1 from '../assets/Image/backgrounds/image 106.png';
 import service2 from '../assets/Image/backgrounds/image 107.png';
 import service3 from '../assets/Image/backgrounds/Mask group.png';
 import service4 from '../assets/Image/backgrounds/Mask group1.png';
+import flagAE from '../assets/Layout1/Image/flags/AE@2x.png';
+import flagAU from '../assets/Layout1/Image/flags/icon.png';
+import flagCN from '../assets/Layout1/Image/flags/CN@2x.png';
+import flagDK from '../assets/Layout1/Image/flags/DK@2x.png';
+import flagFR from '../assets/Layout1/Image/flags/FR@2x.png';
+import flagGB from '../assets/Layout1/Image/flags/GB@2x.png';
+import flagIT from '../assets/Layout1/Image/flags/IT@2x.png';
+import flagRU from '../assets/Layout1/Image/flags/RU@2x.png';
+import flagUS from '../assets/Layout1/Image/flags/US@2x.png';
 
 const getAssetUrl = (path) => {
   // Simple helper to resolve relative paths from src/assets
@@ -506,44 +515,46 @@ const MainBody = ({ onNavigate }) => {
       </section>
 
       {/* ====== Regions Section ====== */}
-      <section className="container mt-8">
-        <h2 className="text-xl md:text-2xl font-bold mb-5 px-3 md:px-0">Suppliers by region</h2>
-        {/* Desktop: 5 columns | Mobile: 2 columns */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-5 px-3 md:px-0">
-          {[
-            { name: 'Arabic Emirates', url: 'shopname.ae', flag: 'src/assets/Layout1/Image/flags/AE@2x.png' },
-            { name: 'Australia', url: 'shopname.ae', flag: 'src/assets/Layout1/Image/flags/icon.png' },
-            { name: 'United States', url: 'shopname.ae', flag: 'src/assets/Layout1/Image/flags/US@2x.png' },
-            { name: 'Russia', url: 'shopname.ru', flag: 'src/assets/Layout1/Image/flags/RU@2x.png' },
-            { name: 'Italy', url: 'shopname.it', flag: 'src/assets/Layout1/Image/flags/IT@2x.png' },
-            { name: 'Denmark', url: 'denmark.com.dk', flag: 'src/assets/Layout1/Image/flags/DE@2x.png' },
-            { name: 'France', url: 'shopname.com.fr', flag: 'src/assets/Layout1/Image/flags/FR@2x.png' },
-            { name: 'Arabic Emirates', url: 'shopname.ae', flag: 'src/assets/Layout1/Image/flags/AE@2x.png' },
-            { name: 'China', url: 'shopname.ae', flag: 'src/assets/Layout1/Image/flags/icon.png' },
-            { name: 'Great Britain', url: 'shopname.co.uk', flag: 'src/assets/Layout1/Image/flags/DE@2x.png' },
-          ].map((region, idx) => (
-            <div key={idx} className="flex items-center gap-2.5">
-              <img src={region.flag} alt={region.name} className="w-7 h-5" />
-              <div>
-                <h4 className="text-xs md:text-sm font-medium">{region.name}</h4>
-                <p className="text-[10px] md:text-xs text-brand-gray">{region.url}</p>
+      <section className="mt-8 px-4 md:px-0">
+        <div className="container">
+          <h2 className="text-xl md:text-2xl font-bold mb-5">Suppliers by region</h2>
+          {/* Desktop: 5 columns | Mobile: 2 columns */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-5 md:gap-5">
+            {[
+              { name: 'Arabic Emirates', url: 'shopname.ae', flag: flagAE },
+              { name: 'Australia', url: 'shopname.ae', flag: flagAU },
+              { name: 'United States', url: 'shopname.ae', flag: flagUS },
+              { name: 'Russia', url: 'shopname.ru', flag: flagRU },
+              { name: 'Italy', url: 'shopname.it', flag: flagIT },
+              { name: 'Denmark', url: 'denmark.com.dk', flag: flagDK },
+              { name: 'France', url: 'shopname.com.fr', flag: flagFR },
+              { name: 'Arabic Emirates', url: 'shopname.ae', flag: flagAE },
+              { name: 'China', url: 'shopname.ae', flag: flagCN },
+              { name: 'Great Britain', url: 'shopname.co.uk', flag: flagGB },
+            ].map((region, idx) => (
+              <div key={idx} className="flex min-w-0 items-center gap-2.5">
+                <img src={region.flag} alt={region.name} className="h-5 w-7 flex-shrink-0 object-cover" />
+                <div className="min-w-0">
+                  <h4 className="truncate text-xs font-medium md:text-sm">{region.name}</h4>
+                  <p className="truncate text-[10px] text-brand-gray md:text-xs">{region.url}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ====== Newsletter ====== */}
-      <section className="mt-10 bg-[#eff2f4] py-10 md:py-14 text-center">
+      <section className="mt-10 bg-[#eff2f4] px-4 py-9 text-center md:px-0 md:py-14">
         <div className="container px-4">
-          <h2 className="text-xl md:text-2xl font-bold mb-2">Subscribe on our newsletter</h2>
-          <p className="text-brand-gray mb-6 md:mb-8 text-sm md:text-base">Get daily news on upcoming offers from many suppliers all over the world</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-2 max-w-[500px] mx-auto relative">
+          <h2 className="mb-2 text-xl font-bold leading-tight md:text-2xl">Subscribe on our newsletter</h2>
+          <p className="mx-auto mb-6 max-w-[560px] text-sm leading-relaxed text-brand-gray md:mb-8 md:text-base">Get daily news on upcoming offers from many suppliers all over the world</p>
+          <div className="relative mx-auto flex max-w-[500px] flex-col justify-center gap-2 sm:flex-row">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hidden sm:block">
               <Mail size={18} />
             </div>
-            <input type="email" placeholder="Email" className="sm:pl-11 pl-4 pr-4 py-2.5 w-full border border-gray-300 rounded-md outline-none focus:border-brand-blue" />
-            <button className="bg-brand-blue text-white px-8 py-2.5 rounded-md font-bold hover:bg-blue-700 transition-colors">Subscribe</button>
+            <input type="email" placeholder="Email" className="w-full rounded-md border border-gray-300 bg-white px-4 py-2.5 outline-none focus:border-brand-blue sm:pl-11" />
+            <button className="rounded-md bg-brand-blue px-8 py-2.5 font-bold text-white transition-colors hover:bg-blue-700 sm:w-auto">Subscribe</button>
           </div>
         </div>
       </section>

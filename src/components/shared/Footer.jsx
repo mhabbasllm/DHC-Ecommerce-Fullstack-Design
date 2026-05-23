@@ -33,7 +33,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-white py-8 md:py-12">
+    <footer className="bg-white px-4 py-8 md:px-0 md:py-12">
       <div className="container px-4">
         {/* Desktop: 6 column grid | Mobile: stacked */}
         <div className="hidden md:grid grid-cols-[2.5fr_1fr_1fr_1fr_1fr_1.5fr] gap-8 mb-16">
@@ -82,7 +82,7 @@ const Footer = () => {
             <div className="flex items-center mb-3">
               <img src={logo} alt="Logo" className="h-8" />
             </div>
-            <p className="text-brand-gray text-xs leading-relaxed max-w-[260px]">
+            <p className="max-w-[280px] text-xs leading-relaxed text-brand-gray">
               Best information about the company gies here but now lorem ipsum is
             </p>
             <div className="flex gap-2 items-center mt-3">
@@ -95,13 +95,13 @@ const Footer = () => {
           </div>
 
           {/* Link sections - 2 column grid on mobile */}
-          <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="mb-6 grid grid-cols-2 gap-x-8 gap-y-6">
             {footerSections.map((section, idx) => (
-              <div key={idx}>
+              <div key={idx} className="min-w-0">
                 <h4 className="font-bold mb-3 text-sm text-brand-dark">{section.title}</h4>
                 <ul className="space-y-2 text-brand-gray text-xs">
                   {section.links.map((link, linkIdx) => (
-                    <li key={linkIdx} className="hover:text-brand-blue cursor-pointer transition-colors">
+                    <li key={linkIdx} className="truncate hover:text-brand-blue cursor-pointer transition-colors">
                       {link}
                     </li>
                   ))}
@@ -113,9 +113,9 @@ const Footer = () => {
           {/* Get app */}
           <div className="mb-6">
             <h4 className="font-bold mb-3 text-sm text-brand-dark">Get app</h4>
-            <div className="flex gap-2">
-              <img src={marketBtn} alt="App Store" className="h-9 cursor-pointer object-contain" />
-              <img src={groupSocial} alt="Google Play" className="h-9 cursor-pointer object-contain" />
+            <div className="flex flex-wrap gap-2">
+              <img src={marketBtn} alt="App Store" className="h-9 max-w-[140px] cursor-pointer object-contain" />
+              <img src={groupSocial} alt="Google Play" className="h-9 max-w-[140px] cursor-pointer object-contain" />
             </div>
           </div>
         </div>
