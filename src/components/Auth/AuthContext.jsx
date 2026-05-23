@@ -34,9 +34,9 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, options = {}) => {
     try {
-      await authService.login(email, password);
+      await authService.login(email, password, options);
       const userData = await authService.getCurrentUser();
       setUser(userData);
       setIsAuthenticated(true);

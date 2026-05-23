@@ -1,4 +1,52 @@
-const API_BASE_URL = 'http://localhost:5237/api/Auth';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5237/api/Auth';
+const TOKEN_KEY = 'authToken';
+const USER_EMAIL_KEY = 'userEmail';
+const STORAGE_KEY = 'authStorage';
+
+const readStoredValue = (key) => localStorage.getItem(key) || sessionStorage.getItem(key);
+
+const clearStoredAuth = () => {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_EMAIL_KEY);
+  localStorage.removeItem(STORAGE_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_EMAIL_KEY);
+};
+
+const getErrorMessage = async (response, fallbackMessage) => {
+  const text = await response.text();
+
+  if (!text) {
+    return fallbackMessage;
+  }
+
+  try {
+    const data = JSON.parse(text);
+
+    if (typeof data === 'string') {
+      return data;
+    }
+
+    if (data?.message) {
+      return data.message;
+    }
+
+    if (Array.isArray(data)) {
+      return data
+        .map((item) => item.description || item.message || item.code)
+        .filter(Boolean)
+        .join(' ');
+    }
+
+    if (data?.errors) {
+      return Object.values(data.errors).flat().join(' ');
+    }
+  } catch {
+    return text;
+  }
+
+  return fallbackMessage;
+};
 
 const authService = {
   // Register a new user
@@ -18,8 +66,7 @@ const authService = {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Registration failed');
+        throw new Error(await getErrorMessage(response, 'Registration failed'));
       }
 
       return await response.json();
@@ -29,7 +76,7 @@ const authService = {
   },
 
   // Login user
-  login: async (email, password) => {
+  login: async (email, password, options = {}) => {
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
@@ -43,16 +90,18 @@ const authService = {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
+        throw new Error(await getErrorMessage(response, 'Login failed'));
       }
 
       const data = await response.json();
-      
+
       // Store JWT token
       if (data.token) {
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('userEmail', email);
+        clearStoredAuth();
+        const storage = options.rememberMe ? localStorage : sessionStorage;
+        localStorage.setItem(STORAGE_KEY, options.rememberMe ? 'local' : 'session');
+        storage.setItem(TOKEN_KEY, data.token);
+        storage.setItem(USER_EMAIL_KEY, email);
       }
 
       return data;
@@ -64,8 +113,8 @@ const authService = {
   // Get current user profile
   getCurrentUser: async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      
+      const token = authService.getToken();
+
       if (!token) {
         return null;
       }
@@ -96,23 +145,22 @@ const authService = {
 
   // Logout user
   logout: () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userEmail');
+    clearStoredAuth();
   },
 
   // Get stored token
   getToken: () => {
-    return localStorage.getItem('authToken');
+    return readStoredValue(TOKEN_KEY);
   },
 
   // Check if user is authenticated
   isAuthenticated: () => {
-    return !!localStorage.getItem('authToken');
+    return !!authService.getToken();
   },
 
   // Get user email from storage
   getUserEmail: () => {
-    return localStorage.getItem('userEmail');
+    return readStoredValue(USER_EMAIL_KEY);
   },
 };
 

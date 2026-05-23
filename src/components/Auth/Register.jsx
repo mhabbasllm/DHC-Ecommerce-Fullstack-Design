@@ -11,11 +11,13 @@ const Register = ({ onNavigate }) => {
   const [gender, setGender] = useState('Male');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setIsLoading(true);
 
     try {
@@ -31,19 +33,20 @@ const Register = ({ onNavigate }) => {
         return;
       }
 
-      if (password.length < 3) {
-        setError('Password must be at least 3 characters');
+      if (password.length < 6) {
+        setError('Password must be at least 6 characters');
         setIsLoading(false);
         return;
       }
 
       await register(fullName, email, password, gender);
-      
-      // Registration successful - redirect to login page
+
       setFullName('');
       setEmail('');
       setPassword('');
-      
+      setTermsAccepted(false);
+      setSuccess('Registration successful! Redirecting to login...');
+
       setTimeout(() => {
         onNavigate('login');
       }, 1500);
@@ -56,7 +59,7 @@ const Register = ({ onNavigate }) => {
 
   return (
     <div className="min-h-[80vh] bg-[#f7f8fa] flex flex-col justify-center items-center py-10 px-4 font-sans relative">
-      
+
       {/* Mobile Back Header */}
       <div className="absolute top-0 left-0 right-0 p-4 md:hidden flex items-center bg-white border-b border-gray-200 z-10">
         <button onClick={() => onNavigate('login')} className="text-brand-dark p-1 mr-3 cursor-pointer">
@@ -67,7 +70,7 @@ const Register = ({ onNavigate }) => {
 
       {/* Main Register Card */}
       <div className="w-full max-w-md bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mt-12 md:mt-0 animate-fade-in">
-        
+
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-brand-dark mb-2">Create an account</h1>
           <p className="text-sm text-brand-gray">Join us to start shopping</p>
@@ -79,12 +82,11 @@ const Register = ({ onNavigate }) => {
           </div>
         )}
 
-        {!error && isLoading && (
+        {success && (
           <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-700 text-sm">
-            ✓ Registration successful! Redirecting to login...
+            {success}
           </div>
         )}
-
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {/* Name Input */}
           <div className="flex flex-col gap-1.5">
@@ -93,8 +95,8 @@ const Register = ({ onNavigate }) => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <User size={18} />
               </div>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 required
                 placeholder="Enter your name"
                 value={fullName}
@@ -112,8 +114,8 @@ const Register = ({ onNavigate }) => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <Mail size={18} />
               </div>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 required
                 placeholder="Enter your email"
                 value={email}
@@ -131,8 +133,8 @@ const Register = ({ onNavigate }) => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <Lock size={18} />
               </div>
-              <input 
-                type={showPassword ? "text" : "password"} 
+              <input
+                type={showPassword ? "text" : "password"}
                 required
                 placeholder="Create a password"
                 value={password}
@@ -140,7 +142,7 @@ const Register = ({ onNavigate }) => {
                 disabled={isLoading}
                 className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-md outline-none text-brand-dark focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all disabled:bg-gray-50"
               />
-              <div 
+              <div
                 className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-gray-400 hover:text-brand-dark transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
               >
@@ -152,7 +154,7 @@ const Register = ({ onNavigate }) => {
           {/* Gender Input */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-semibold text-brand-dark">Gender</label>
-            <select 
+            <select
               value={gender}
               onChange={(e) => setGender(e.target.value)}
               disabled={isLoading}
@@ -166,14 +168,14 @@ const Register = ({ onNavigate }) => {
 
           {/* Terms Agreement */}
           <div className="flex items-start gap-2 mt-1">
-            <input 
-              type="checkbox" 
-              id="terms" 
+            <input
+              type="checkbox"
+              id="terms"
               required
               checked={termsAccepted}
               onChange={(e) => setTermsAccepted(e.target.checked)}
               disabled={isLoading}
-              className="w-4 h-4 mt-0.5 text-brand-blue border-gray-300 rounded cursor-pointer accent-brand-blue" 
+              className="w-4 h-4 mt-0.5 text-brand-blue border-gray-300 rounded cursor-pointer accent-brand-blue"
             />
             <label htmlFor="terms" className="text-sm text-brand-gray cursor-pointer select-none leading-tight">
               I agree to the <span className="text-brand-blue hover:underline">Terms of Service</span> and <span className="text-brand-blue hover:underline">Privacy Policy</span>.
@@ -181,7 +183,7 @@ const Register = ({ onNavigate }) => {
           </div>
 
           {/* Submit Button */}
-          <button 
+          <button
             type="submit"
             disabled={isLoading}
             className="w-full bg-brand-blue hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold py-2.5 rounded-md transition-colors mt-2 shadow-sm"
@@ -192,7 +194,7 @@ const Register = ({ onNavigate }) => {
 
         <div className="mt-8 text-center text-sm text-brand-gray">
           Already have an account?{' '}
-          <span 
+          <span
             className="text-brand-blue font-bold cursor-pointer hover:underline"
             onClick={() => onNavigate('login')}
           >

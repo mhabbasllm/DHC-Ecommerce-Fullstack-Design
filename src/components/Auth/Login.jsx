@@ -23,7 +23,7 @@ const Login = ({ onNavigate }) => {
         return;
       }
 
-      await login(email, password);
+      await login(email, password, { rememberMe });
       
       // Login successful, redirect to home
       setEmail('');
