@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  User, 
-  MessageSquare, 
-  Heart, 
-  ShoppingCart, 
+import {
+  User,
+  MessageSquare,
+  Heart,
+  ShoppingCart,
   Menu,
   ChevronDown,
   X,
@@ -51,22 +51,22 @@ const Header = ({ onNavigate, currentPage }) => {
           <div className="flex items-center cursor-pointer" onClick={handleLogoClick}>
             <img src={logo} alt="Brand Logo" className="h-10 animate-fade-in" />
           </div>
-          
+
           {currentPage !== 'cart' && (
             <div className="flex-1 flex max-w-[600px]">
-              <input 
-                type="text" 
-                className="flex-1 px-4 py-2 border-2 border-brand-blue rounded-l-md outline-none text-brand-dark" 
-                placeholder="Search" 
+              <input
+                type="text"
+                className="flex-1 px-4 py-2 border-2 border-brand-blue rounded-l-md outline-none text-brand-dark"
+                placeholder="Search"
                 onKeyDown={(e) => e.key === 'Enter' && handleProductsClick()}
               />
-              <div 
+              <div
                 className="px-4 py-2 border-2 border-brand-blue border-l-0 bg-white cursor-pointer flex items-center gap-1 text-brand-gray select-none hover:bg-gray-50 transition-colors"
                 onClick={handleProductsClick}
               >
                 All category <ChevronDown size={16} />
               </div>
-              <button 
+              <button
                 className="bg-brand-blue text-white px-6 py-2 rounded-r-md font-semibold hover:bg-blue-700 transition-colors"
                 onClick={handleProductsClick}
               >
@@ -77,23 +77,23 @@ const Header = ({ onNavigate, currentPage }) => {
 
           <div className="flex gap-5">
             {[
-              isAuthenticated && user 
-                ? { 
-                    icon: (
-                      <div className="w-5 h-5 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold text-xs">
-                        {user.fullName?.charAt(0).toUpperCase()}
-                      </div>
-                    ), 
-                    label: 'Logout', 
-                    onClick: handleLogout 
-                  }
+              isAuthenticated && user
+                ? {
+                  icon: (
+                    <div className="w-5 h-5 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold text-xs">
+                      {user.fullName?.charAt(0).toUpperCase()}
+                    </div>
+                  ),
+                  label: 'Logout',
+                  onClick: handleLogout
+                }
                 : { icon: <User size={20} />, label: 'Profile', onClick: () => onNavigate('login') },
               { icon: <MessageSquare size={20} />, label: 'Message', onClick: () => onNavigate('home') },
               { icon: <Heart size={20} />, label: 'Orders', onClick: () => onNavigate('products') },
               { icon: <ShoppingCart size={20} />, label: 'My cart', onClick: () => onNavigate('cart') },
             ].map((item, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className="flex flex-col items-center text-xs text-brand-gray gap-1 cursor-pointer hover:text-brand-blue transition-colors group"
                 onClick={item.onClick || undefined}
                 title={item.label === 'Logout' && user ? `Logged in as ${user.fullName}` : undefined}
@@ -134,85 +134,86 @@ const Header = ({ onNavigate, currentPage }) => {
 
       {/* ======== MOBILE HEADER (visible only on mobile, hidden when page has own header) ======== */}
       {!hasOwnMobileHeader && (
-      <header className="bg-white border-b border-gray-200 py-3 px-4 md:hidden">
-        {/* Top row: hamburger, logo, cart + user */}
-        <div className="flex items-center justify-between mb-3">
-          <button 
-            onClick={() => setDrawerOpen(true)} 
-            className="text-brand-dark p-1 cursor-pointer"
-            aria-label="Open menu"
-          >
-            <Menu size={24} />
-          </button>
-
-          <div className="flex items-center cursor-pointer" onClick={handleLogoClick}>
-            <img src={logo} alt="Brand Logo" className="h-8 animate-fade-in" />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <ShoppingCart 
-              size={22} 
-              className="text-brand-dark cursor-pointer hover:text-brand-blue transition-colors" 
-              onClick={() => onNavigate('cart')} 
-            />
-            {isAuthenticated && user ? (
-              <div 
-                className="w-7 h-7 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold text-xs cursor-pointer hover:bg-blue-600 transition-colors"
-                onClick={handleLogout}
-                title={`Logout from ${user.fullName}`}
+        <header className="bg-white border-b border-gray-200 py-3 px-4 md:hidden">
+          {/* Top row: hamburger, logo, cart + user */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setDrawerOpen(true)}
+                className="text-brand-dark p-1 cursor-pointer"
+                aria-label="Open menu"
               >
-                {user.fullName?.charAt(0).toUpperCase()}
+                <Menu size={24} />
+              </button>
+
+              <div className="flex items-center cursor-pointer" onClick={handleLogoClick}>
+                <img src={logo} alt="Brand Logo" className="h-8 animate-fade-in" />
               </div>
-            ) : (
-              <User 
-                size={22} 
-                className="text-brand-dark cursor-pointer hover:text-brand-blue transition-colors" 
-                onClick={() => onNavigate('login')} 
+            </div>
+
+            <div className="flex items-center gap-4">
+              <ShoppingCart
+                size={22}
+                className="text-brand-dark cursor-pointer hover:text-brand-blue transition-colors"
+                onClick={() => onNavigate('cart')}
               />
-            )}
+              {isAuthenticated && user ? (
+                <div
+                  className="w-7 h-7 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold text-xs cursor-pointer hover:bg-blue-600 transition-colors"
+                  onClick={handleLogout}
+                  title={`Logout from ${user.fullName}`}
+                >
+                  {user.fullName?.charAt(0).toUpperCase()}
+                </div>
+              ) : (
+                <User
+                  size={22}
+                  className="text-brand-dark cursor-pointer hover:text-brand-blue transition-colors"
+                  onClick={() => onNavigate('login')}
+                />
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Search bar row */}
-        <div className="flex border border-gray-300 rounded-md overflow-hidden">
-          <div className="pl-3 flex items-center text-gray-400">
-            <Search size={16} />
+          {/* Search bar row */}
+          <div className="flex border border-gray-300 rounded-md overflow-hidden">
+            <div className="pl-3 flex items-center text-gray-400">
+              <Search size={16} />
+            </div>
+            <input
+              type="text"
+              className="flex-1 px-2 py-2 outline-none text-brand-dark text-sm bg-white"
+              placeholder="Search"
+              onKeyDown={(e) => e.key === 'Enter' && handleProductsClick()}
+            />
           </div>
-          <input 
-            type="text" 
-            className="flex-1 px-2 py-2 outline-none text-brand-dark text-sm bg-white" 
-            placeholder="Search" 
-            onKeyDown={(e) => e.key === 'Enter' && handleProductsClick()}
-          />
-        </div>
 
-        {/* Category pills row */}
-        <div className="flex gap-2 mt-3 overflow-x-auto no-scrollbar pb-1 select-none">
-          {['All category', 'Gadgets', 'Clothes', 'Accessories', 'Electronics'].map((cat, idx) => (
-            <span 
-              key={idx} 
-              className={`whitespace-nowrap text-xs font-medium px-3 py-1.5 rounded-md border cursor-pointer transition-colors flex-shrink-0 ${
-                idx === 0 
-                  ? 'bg-brand-blue text-white border-brand-blue' 
-                  : 'bg-white text-brand-dark border-gray-300 hover:border-brand-blue hover:text-brand-blue'
-              }`}
-              onClick={handleProductsClick}
-            >
-              {cat}
-            </span>
-          ))}
-        </div>
-      </header>
+          {/* Category pills row */}
+          <div className="flex gap-2 mt-3 overflow-x-auto no-scrollbar pb-1 select-none">
+            {['All category', 'Gadgets', 'Clothes', 'Accessories', 'Electronics'].map((cat, idx) => (
+              <span
+                key={idx}
+                className={`whitespace-nowrap text-xs font-medium px-3 py-1.5 rounded-md border cursor-pointer transition-colors flex-shrink-0 ${idx === 0
+                    ? 'bg-brand-blue text-white border-brand-blue'
+                    : 'bg-white text-brand-dark border-gray-300 hover:border-brand-blue hover:text-brand-blue'
+                  }`}
+                onClick={handleProductsClick}
+              >
+                {cat}
+              </span>
+            ))}
+          </div>
+        </header>
       )}
 
       {/* ======== MOBILE DRAWER OVERLAY ======== */}
       {drawerOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/40 z-50 md:hidden"
           onClick={() => setDrawerOpen(false)}
         >
           {/* Drawer panel */}
-          <div 
+          <div
             className="absolute top-0 left-0 bottom-0 w-[280px] bg-white shadow-2xl flex flex-col animate-slide-in-left"
             onClick={(e) => e.stopPropagation()}
           >
@@ -226,11 +227,11 @@ const Header = ({ onNavigate, currentPage }) => {
                     </div>
                     <div>
                       <span className="block text-sm font-medium text-brand-dark">Hi, {user.fullName}</span>
-                      <button 
+                      <button
                         onClick={() => {
                           setDrawerOpen(false);
                           handleLogout();
-                        }} 
+                        }}
                         className="text-xs text-red-500 font-semibold hover:underline block text-left"
                       >
                         Logout
@@ -242,7 +243,7 @@ const Header = ({ onNavigate, currentPage }) => {
                     <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
                       <User size={20} className="text-gray-400" />
                     </div>
-                    <span 
+                    <span
                       className="text-sm font-medium text-brand-dark cursor-pointer hover:text-brand-blue"
                       onClick={() => handleDrawerNav('login')}
                     >
@@ -251,8 +252,8 @@ const Header = ({ onNavigate, currentPage }) => {
                   </>
                 )}
               </div>
-              <button 
-                onClick={() => setDrawerOpen(false)} 
+              <button
+                onClick={() => setDrawerOpen(false)}
                 className="text-gray-400 hover:text-brand-dark cursor-pointer"
                 aria-label="Close menu"
               >
@@ -269,8 +270,8 @@ const Header = ({ onNavigate, currentPage }) => {
                   { icon: <Heart size={18} />, label: 'Favorites', page: 'products' },
                   { icon: <ClipboardList size={18} />, label: 'My orders', page: 'products' },
                 ].map((item, idx) => (
-                  <li 
-                    key={idx} 
+                  <li
+                    key={idx}
                     className="flex items-center gap-3 px-3 py-2.5 text-sm text-brand-dark font-medium rounded-md cursor-pointer hover:bg-blue-50 hover:text-brand-blue transition-colors"
                     onClick={() => handleDrawerNav(item.page)}
                   >
@@ -288,8 +289,8 @@ const Header = ({ onNavigate, currentPage }) => {
                   { icon: <Phone size={18} />, label: 'Contact us', page: 'home' },
                   { icon: <Info size={18} />, label: 'About', page: 'home' },
                 ].map((item, idx) => (
-                  <li 
-                    key={idx} 
+                  <li
+                    key={idx}
                     className="flex items-center gap-3 px-3 py-2.5 text-sm text-brand-dark font-medium rounded-md cursor-pointer hover:bg-blue-50 hover:text-brand-blue transition-colors"
                     onClick={() => handleDrawerNav(item.page)}
                   >
@@ -303,8 +304,8 @@ const Header = ({ onNavigate, currentPage }) => {
 
               <ul className="px-7 space-y-2.5">
                 {['User agreement', 'Partnership', 'Privacy policy'].map((link, idx) => (
-                  <li 
-                    key={idx} 
+                  <li
+                    key={idx}
                     className="text-sm text-brand-gray cursor-pointer hover:text-brand-blue transition-colors"
                   >
                     {link}

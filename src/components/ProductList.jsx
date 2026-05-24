@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  ChevronUp, 
-  ChevronDown, 
-  Grid, 
-  List, 
-  Star, 
-  Heart, 
+import {
+  ChevronUp,
+  ChevronDown,
+  Grid,
+  List,
+  Star,
+  Heart,
   X,
   ChevronLeft,
   ChevronRight,
@@ -344,9 +344,8 @@ const ProductList = ({ onNavigate }) => {
           {/* Category pills */}
           <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3 px-3 select-none">
             {['Tablets', 'Phones', 'Ipads', 'Ipod', 'Jacks', 'Cases', 'Cables'].map((cat, idx) => (
-              <span key={idx} className={`whitespace-nowrap text-xs font-medium px-3 py-1.5 rounded-md border cursor-pointer transition-colors flex-shrink-0 ${
-                idx === 0 ? 'bg-brand-blue text-white border-brand-blue' : 'bg-white text-brand-dark border-gray-300'
-              }`}>{cat}</span>
+              <span key={idx} className={`whitespace-nowrap text-xs font-medium px-3 py-1.5 rounded-md border cursor-pointer transition-colors flex-shrink-0 ${idx === 0 ? 'bg-brand-blue text-white border-brand-blue' : 'bg-white text-brand-dark border-gray-300'
+                }`}>{cat}</span>
             ))}
           </div>
 
@@ -386,7 +385,7 @@ const ProductList = ({ onNavigate }) => {
             <div className="bg-transparent space-y-4">
               {/* Category Divider */}
               <div className="border-t border-gray-200 pt-4">
-                <div 
+                <div
                   className="flex justify-between items-center font-bold mb-3 cursor-pointer hover:text-brand-blue transition-colors"
                   onClick={() => toggleSection('category')}
                 >
@@ -406,7 +405,7 @@ const ProductList = ({ onNavigate }) => {
 
               {/* Brands Filter */}
               <div className="border-t border-gray-200 pt-4">
-                <div 
+                <div
                   className="flex justify-between items-center font-bold mb-3 cursor-pointer hover:text-brand-blue transition-colors"
                   onClick={() => toggleSection('brands')}
                 >
@@ -417,9 +416,9 @@ const ProductList = ({ onNavigate }) => {
                   <div className="space-y-2.5">
                     {Object.keys(selectedBrands).map((brand) => (
                       <label key={brand} className="flex items-center gap-2.5 text-sm cursor-pointer select-none group">
-                        <input 
-                          type="checkbox" 
-                          checked={selectedBrands[brand]} 
+                        <input
+                          type="checkbox"
+                          checked={selectedBrands[brand]}
                           onChange={() => handleBrandChange(brand)}
                           className="w-4.5 h-4.5 rounded border-gray-300 text-brand-blue focus:ring-brand-blue"
                         />
@@ -433,7 +432,7 @@ const ProductList = ({ onNavigate }) => {
 
               {/* Features Filter */}
               <div className="border-t border-gray-200 pt-4">
-                <div 
+                <div
                   className="flex justify-between items-center font-bold mb-3 cursor-pointer hover:text-brand-blue transition-colors"
                   onClick={() => toggleSection('features')}
                 >
@@ -444,9 +443,9 @@ const ProductList = ({ onNavigate }) => {
                   <div className="space-y-2.5">
                     {Object.keys(selectedFeatures).map((feat) => (
                       <label key={feat} className="flex items-center gap-2.5 text-sm cursor-pointer select-none group">
-                        <input 
-                          type="checkbox" 
-                          checked={selectedFeatures[feat]} 
+                        <input
+                          type="checkbox"
+                          checked={selectedFeatures[feat]}
                           onChange={() => handleFeatureChange(feat)}
                           className="w-4.5 h-4.5 rounded border-gray-300 text-brand-blue focus:ring-brand-blue"
                         />
@@ -460,7 +459,7 @@ const ProductList = ({ onNavigate }) => {
 
               {/* Price Range Filter */}
               <div className="border-t border-gray-200 pt-4">
-                <div 
+                <div
                   className="flex justify-between items-center font-bold mb-3 cursor-pointer hover:text-brand-blue transition-colors"
                   onClick={() => toggleSection('priceRange')}
                 >
@@ -472,8 +471,8 @@ const ProductList = ({ onNavigate }) => {
                     {/* Dual Range Slider */}
                     <div className="relative h-1 bg-gray-200 rounded-full my-6">
                       {/* Active track */}
-                      <div 
-                        className="absolute h-full bg-brand-blue rounded-full" 
+                      <div
+                        className="absolute h-full bg-brand-blue rounded-full"
                         style={{ left: `${priceMinPercent}%`, right: `${100 - priceMaxPercent}%` }}
                       ></div>
                       {/* Min thumb */}
@@ -500,20 +499,20 @@ const ProductList = ({ onNavigate }) => {
                     <div className="flex gap-2 mb-4">
                       <div className="flex-1">
                         <label className="text-xs text-brand-gray block mb-1">Min</label>
-                        <input 
-                          type="number" 
-                          value={priceMin} 
+                        <input
+                          type="number"
+                          value={priceMin}
                           onChange={(e) => handlePriceMinChange(e.target.value)}
-                          className="w-full px-3 py-1.5 border border-gray-300 rounded-md outline-none focus:border-brand-blue text-sm" 
+                          className="w-full px-3 py-1.5 border border-gray-300 rounded-md outline-none focus:border-brand-blue text-sm"
                         />
                       </div>
                       <div className="flex-1">
                         <label className="text-xs text-brand-gray block mb-1">Max</label>
-                        <input 
-                          type="number" 
+                        <input
+                          type="number"
                           value={priceMax}
                           onChange={(e) => handlePriceMaxChange(e.target.value)}
-                          className="w-full px-3 py-1.5 border border-gray-300 rounded-md outline-none focus:border-brand-blue text-sm" 
+                          className="w-full px-3 py-1.5 border border-gray-300 rounded-md outline-none focus:border-brand-blue text-sm"
                         />
                       </div>
                     </div>
@@ -526,7 +525,7 @@ const ProductList = ({ onNavigate }) => {
 
               {/* Condition Filter */}
               <div className="border-t border-gray-200 pt-4">
-                <div 
+                <div
                   className="flex justify-between items-center font-bold mb-3 cursor-pointer hover:text-brand-blue transition-colors"
                   onClick={() => toggleSection('condition')}
                 >
@@ -537,11 +536,11 @@ const ProductList = ({ onNavigate }) => {
                   <div className="space-y-2.5 text-sm text-brand-dark">
                     {['Any', 'Refurbished', 'Brand new', 'Old items'].map((cond, i) => (
                       <label key={cond} className="flex items-center gap-2 cursor-pointer group">
-                        <input 
-                          type="radio" 
-                          name="condition" 
+                        <input
+                          type="radio"
+                          name="condition"
                           defaultChecked={i === 0}
-                          className="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300" 
+                          className="w-4 h-4 text-brand-blue focus:ring-brand-blue border-gray-300"
                         />
                         <span className="group-hover:text-brand-blue transition-colors">{cond}</span>
                       </label>
@@ -552,7 +551,7 @@ const ProductList = ({ onNavigate }) => {
 
               {/* Ratings Filter */}
               <div className="border-t border-gray-200 pt-4">
-                <div 
+                <div
                   className="flex justify-between items-center font-bold mb-3 cursor-pointer hover:text-brand-blue transition-colors"
                   onClick={() => toggleSection('ratings')}
                 >
@@ -565,18 +564,18 @@ const ProductList = ({ onNavigate }) => {
                       const starsCount = 5 - idx;
                       return (
                         <label key={rate} className="flex items-center gap-2.5 text-sm cursor-pointer select-none group">
-                          <input 
-                            type="checkbox" 
-                            checked={selectedRatings[rate]} 
+                          <input
+                            type="checkbox"
+                            checked={selectedRatings[rate]}
                             onChange={() => handleRatingChange(rate)}
                             className="w-4.5 h-4.5 rounded border-gray-300 text-brand-blue focus:ring-brand-blue"
                           />
                           <div className="flex items-center gap-1">
                             {Array.from({ length: 5 }).map((_, sIdx) => (
-                              <Star 
-                                key={sIdx} 
-                                size={14} 
-                                className={sIdx < starsCount ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'} 
+                              <Star
+                                key={sIdx}
+                                size={14}
+                                className={sIdx < starsCount ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'}
                               />
                             ))}
                           </div>
@@ -600,8 +599,8 @@ const ProductList = ({ onNavigate }) => {
               </div>
               <div className="flex items-center gap-5 flex-wrap">
                 <label className="flex items-center gap-2 text-sm cursor-pointer select-none group">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={verifiedOnly}
                     onChange={(e) => setVerifiedOnly(e.target.checked)}
                     className="w-4.5 h-4.5 rounded border-gray-300 text-brand-blue focus:ring-brand-blue"
@@ -623,85 +622,78 @@ const ProductList = ({ onNavigate }) => {
 
             {/* Active Filters / Tags */}
             {activeFilters.length > 0 && (
-              <div className="flex flex-wrap gap-2 md:gap-2.5 items-center mb-4 md:mb-5 select-none px-3 md:px-0">
+              <div className="flex flex-wrap gap-2 items-center mb-3 select-none px-3 md:px-0">
                 {activeFilters.map((filter) => (
-                  <div 
-                    key={filter} 
-                    className="flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 bg-white border border-gray-300 rounded-md text-xs md:text-sm text-brand-dark cursor-pointer hover:border-red-400 hover:text-red-500 transition-all font-medium"
+                  <div
+                    key={filter}
+                    className="flex items-center gap-2 px-2.5 py-1 bg-white border border-brand-blue rounded-md text-[13px] md:text-sm text-[#505050] cursor-pointer"
                     onClick={() => removeFilter(filter)}
                   >
                     <span>{filter}</span>
-                    <X size={12} className="text-gray-400" />
+                    <X size={14} className="text-[#8b96a5]" />
                   </div>
                 ))}
-                <button 
-                  onClick={clearAllFilters}
-                  className="text-brand-blue text-xs md:text-sm font-semibold hover:underline transition-colors ml-1"
-                >
-                  Clear all filter
-                </button>
               </div>
             )}
 
             {/* Product Rendering Grid/List */}
             {viewType === 'list' ? (
               // List View Mode
-              <div className="space-y-3 md:space-y-4">
+              <div className="space-y-3 md:space-y-4 px-3 md:px-0">
                 {products.map((product) => (
-                  <div 
-                    key={product.id} 
+                  <div
+                    key={product.id}
                     onClick={() => onNavigate('product-details')}
-                    className="bg-white border border-gray-200 rounded-none md:rounded-md flex overflow-hidden p-3 md:p-5 shadow-sm hover:shadow-md hover:border-brand-blue transition-all group cursor-pointer"
+                    className="bg-white border border-gray-200 rounded-md flex overflow-hidden p-3 md:p-5 shadow-sm hover:shadow-md hover:border-brand-blue transition-all group cursor-pointer"
                   >
                     {/* Image */}
-                    <div className="w-[90px] h-[90px] md:w-[200px] md:h-[200px] flex-shrink-0 flex items-center justify-center md:border-r border-gray-100 md:pr-5 select-none overflow-hidden">
-                      <img 
-                        src={product.img} 
-                        alt={product.title} 
-                        className={`product-list-img-${product.id} max-w-[85%] max-h-[85%] object-contain transition-transform duration-300`} 
+                    <div className="w-[100px] h-[100px] md:w-[200px] md:h-[200px] flex-shrink-0 flex items-center justify-center md:border-r border-gray-100 md:pr-5 select-none overflow-hidden">
+                      <img
+                        src={product.img}
+                        alt={product.title}
+                        className={`product-list-img-${product.id} max-w-full max-h-full object-contain transition-transform duration-300`}
                       />
                     </div>
                     {/* Content Details */}
-                    <div className="flex-1 pl-3 md:pl-6 flex flex-col justify-between relative">
-                      <div>
-                        {/* Favorite Badge - desktop only */}
-                        <div className="absolute top-0 right-0 w-10 h-10 border border-gray-200 rounded-full items-center justify-center cursor-pointer hover:bg-red-50 hover:text-[#eb001b] hover:border-red-200 transition-colors shadow-sm bg-white hidden md:flex" onClick={(e) => e.stopPropagation()}>
-                          <Heart size={18} className="text-brand-blue group-hover:scale-110 transition-transform" />
-                        </div>
-                        
-                        <h3 className="text-sm md:text-lg font-semibold pr-0 md:pr-12 group-hover:text-brand-blue transition-colors leading-snug">
-                          Regular Fit Resort Shirt
-                        </h3>
-                        
-                        {/* Price Details */}
-                        <div className="flex items-baseline gap-2 mt-1 md:mt-2.5 mb-1 md:mb-2 select-none">
-                          <span className="text-base md:text-xl font-bold text-brand-dark">${product.price}</span>
-                        </div>
+                    <div className="flex-1 pl-3 md:pl-6 flex flex-col justify-center relative">
 
-                        {/* Rating & Orders */}
-                        <div className="flex flex-wrap items-center gap-1.5 md:gap-3.5 text-[10px] md:text-sm text-brand-gray select-none mb-1 md:mb-3">
-                          <div className="flex items-center gap-0.5">
-                            {Array.from({ length: 5 }).map((_, sIdx) => (
-                              <Star 
-                                key={sIdx} 
-                                size={12} 
-                                className={sIdx < Math.floor(product.rating) ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'} 
-                              />
-                            ))}
-                            <span className="text-[#ff9017] ml-1 font-bold">{product.ratingNum}</span>
-                          </div>
-                          <span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-gray-300 rounded-full"></span>
-                          <span>{product.orders} orders</span>
-                        </div>
-
-                        {/* Free Shipping label */}
-                        <span className="text-green-600 font-semibold text-xs md:text-sm">{product.shipping}</span>
-
-                        {/* Description - desktop only */}
-                        <p className="text-brand-gray text-sm leading-relaxed max-w-[620px] line-clamp-2 hidden md:block mt-2">
-                          {product.desc}
-                        </p>
+                      {/* Favorite Badge - desktop only */}
+                      <div className="absolute top-0 right-0 w-10 h-10 border border-gray-200 rounded-full items-center justify-center cursor-pointer hover:bg-red-50 hover:text-[#eb001b] hover:border-red-200 transition-colors shadow-sm bg-white hidden md:flex" onClick={(e) => e.stopPropagation()}>
+                        <Heart size={18} className="text-brand-blue group-hover:scale-110 transition-transform" />
                       </div>
+
+                      <h3 className="text-[15px] md:text-lg text-[#505050] md:font-semibold pr-0 md:pr-12 group-hover:text-brand-blue transition-colors leading-snug mb-1">
+                        Regular Fit Resort Shirt
+                      </h3>
+
+                      {/* Price Details */}
+                      <div className="flex items-baseline gap-2 mb-1 md:mb-2 select-none">
+                        <span className="text-[16px] md:text-xl font-bold text-brand-dark">${product.price}</span>
+                      </div>
+
+                      {/* Rating & Orders */}
+                      <div className="flex flex-wrap items-center gap-1.5 md:gap-3.5 text-[13px] md:text-sm text-[#8b96a5] select-none mb-1.5 md:mb-3">
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, sIdx) => (
+                            <Star
+                              key={sIdx}
+                              size={13}
+                              className={sIdx < Math.floor(product.rating) ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-[#ff9017] ml-0.5">{product.ratingNum}</span>
+                        <span className="w-1 md:w-1.5 h-1 md:h-1.5 bg-gray-300 rounded-full mx-1"></span>
+                        <span>{product.orders} orders</span>
+                      </div>
+
+                      {/* Free Shipping label */}
+                      <span className="text-[#00b517] text-[13px] md:text-sm">{product.shipping}</span>
+
+                      {/* Description - desktop only */}
+                      <p className="text-[#505050] text-sm leading-relaxed max-w-[620px] line-clamp-2 hidden md:block mt-2">
+                        {product.desc}
+                      </p>
 
                       <span className="text-brand-blue font-bold text-sm hover:underline w-fit select-none mt-4 hidden md:inline" onClick={() => onNavigate('product-details')}>
                         View details
@@ -714,17 +706,17 @@ const ProductList = ({ onNavigate }) => {
               // Grid View Mode (Image 5 representation)
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-5 px-2 md:px-0">
                 {products.map((product) => (
-                  <div 
-                    key={product.id} 
+                  <div
+                    key={product.id}
                     onClick={() => onNavigate('product-details')}
                     className="bg-white border border-gray-200 rounded-md p-4 flex flex-col justify-between shadow-sm hover:shadow-md hover:border-brand-blue transition-all group cursor-pointer"
                   >
                     {/* Image */}
                     <div className="h-[180px] w-full flex items-center justify-center p-3 select-none mb-4 overflow-hidden">
-                      <img 
-                        src={product.img} 
-                        alt={product.title} 
-                        className={`product-grid-img-${product.id} max-h-[85%] max-w-[85%] object-contain transition-transform duration-300`} 
+                      <img
+                        src={product.img}
+                        alt={product.title}
+                        className={`product-grid-img-${product.id} max-h-[85%] max-w-[85%] object-contain transition-transform duration-300`}
                       />
                     </div>
                     {/* Details */}
@@ -739,15 +731,15 @@ const ProductList = ({ onNavigate }) => {
                           <Heart size={15} className="text-brand-blue" />
                         </div>
                       </div>
-                      
+
                       {/* Rating */}
                       <div className="flex items-center gap-1.5 text-xs select-none mb-2">
                         <div className="flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, sIdx) => (
-                            <Star 
-                              key={sIdx} 
-                              size={12} 
-                              className={sIdx < 4 ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'} 
+                            <Star
+                              key={sIdx}
+                              size={12}
+                              className={sIdx < 4 ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'}
                             />
                           ))}
                         </div>
@@ -765,7 +757,7 @@ const ProductList = ({ onNavigate }) => {
             )}
 
             {/* Pagination Controls */}
-            <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 border-t border-gray-200 mt-8 pt-5 select-none">
+            <div className="hidden md:flex flex-wrap items-center justify-center md:justify-end gap-3 border-t border-gray-200 mt-8 pt-5 select-none">
               <div>
                 <select className="border border-gray-300 rounded-md px-3 py-1.5 text-sm outline-none bg-white cursor-pointer hover:border-brand-blue transition-colors text-brand-dark font-medium">
                   <option>Show 10</option>
@@ -795,18 +787,20 @@ const ProductList = ({ onNavigate }) => {
         </div>
 
         {/* ====== YOU MAY ALSO LIKE (all devices) ====== */}
-        <div className="mt-8 mb-4">
-          <h2 className="text-base md:text-xl font-bold text-brand-dark mb-4 px-3 md:px-0">You may also like</h2>
-          <div className="flex overflow-x-auto no-scrollbar gap-3 md:gap-4 pb-3 px-3 md:px-0">
+        <div className="mt-6 mb-8">
+          <h2 className="text-[18px] md:text-xl font-bold text-brand-dark mb-4 px-3 md:px-0">You may also like</h2>
+          <div className="flex overflow-x-auto no-scrollbar gap-2.5 md:gap-4 pb-3 px-3 md:px-0">
             {youMayLike.map((item, idx) => (
-              <div 
-                key={idx} 
-                className="bg-white border border-gray-200 rounded-md p-3 md:p-4 hover:shadow-md transition-shadow cursor-pointer flex-shrink-0 w-[150px] md:w-[200px]"
+              <div
+                key={idx}
+                className="bg-white border border-gray-200 rounded-md p-3 hover:shadow-md transition-shadow cursor-pointer flex-shrink-0 w-[140px] md:w-[200px]"
                 onClick={() => onNavigate('product-details')}
               >
-                <img src={item.img} alt={item.title} className="w-full h-24 md:h-36 object-contain mb-3" />
-                <p className="font-bold text-sm mb-1">${item.price}</p>
-                <p className="text-brand-gray text-xs line-clamp-2">{item.title}</p>
+                <div className="h-28 md:h-36 w-full flex items-center justify-center mb-3">
+                  <img src={item.img} alt={item.title} className="max-w-full max-h-full object-contain" />
+                </div>
+                <p className="font-bold text-[15px] md:text-base text-[#1c1c1c] mb-0.5">${item.price}</p>
+                <p className="text-[#8b96a5] text-[13px] md:text-sm truncate">{item.title}</p>
               </div>
             ))}
           </div>

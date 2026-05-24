@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  Heart, 
-  Star, 
-  ShieldAlert, 
-  Globe, 
-  MessageSquare, 
-  ShoppingBag, 
-  Check, 
+import {
+  Heart,
+  Star,
+  ShieldAlert,
+  Globe,
+  MessageSquare,
+  ShoppingBag,
+  Check,
   Mail,
   ChevronRight,
   ChevronLeft,
@@ -14,7 +14,8 @@ import {
   ShieldCheck,
   ShoppingCart,
   User,
-  ArrowLeft
+  ArrowLeft,
+  ArrowRight
 } from 'lucide-react';
 
 // Import clothing assets
@@ -80,8 +81,8 @@ const ProductDetails = ({ onNavigate }) => {
 
   return (
     <main className="bg-[#f7f8fa] py-0 md:py-6 text-brand-dark font-sans">
-      <div className="container max-w-[1200px] mx-auto px-4">
-        
+      <div className="container max-w-[1200px] mx-auto md:px-4">
+
         {/* Breadcrumbs - desktop only */}
         <div className="text-sm text-brand-gray mb-5 flex-wrap items-center gap-2 select-none hidden md:flex">
           <span className="hover:text-brand-blue cursor-pointer transition-colors" onClick={() => onNavigate('home')}>Home</span>
@@ -95,68 +96,74 @@ const ProductDetails = ({ onNavigate }) => {
 
         {/* ====== MOBILE PRODUCT VIEW ====== */}
         <div className="md:hidden">
-          {/* Mobile header: back + cart + user */}
-          <div className="flex items-center justify-between py-3 px-1 mb-2">
-            <button onClick={() => onNavigate('products')} className="text-brand-dark p-1 cursor-pointer">
-              <ArrowLeft size={22} />
-            </button>
-            <div className="flex items-center gap-4">
-              <ShoppingCart size={20} className="text-brand-dark cursor-pointer" onClick={() => onNavigate('cart')} />
-              <User size={20} className="text-brand-dark cursor-pointer hover:text-brand-blue" onClick={() => onNavigate('login')} />
+          <div className="bg-white pb-5">
+            {/* Mobile header: back + cart + user */}
+            <div className="flex items-center justify-between py-3 px-4 mb-2">
+              <button onClick={() => onNavigate('products')} className="text-brand-dark p-1 cursor-pointer">
+                <ArrowLeft size={22} />
+              </button>
+              <div className="flex items-center gap-4">
+                <ShoppingCart size={20} className="text-brand-dark cursor-pointer" onClick={() => onNavigate('cart')} />
+                <User size={20} className="text-brand-dark cursor-pointer hover:text-brand-blue" onClick={() => onNavigate('login')} />
+              </div>
+            </div>
+
+            <div className="relative mb-4">
+              <div className="h-[300px] flex items-center justify-center p-4 overflow-hidden select-none">
+                <img src={activeImage} alt="Product" className="max-h-full max-w-full object-contain" />
+              </div>
+              <div className="absolute bottom-4 right-4 bg-black/30 rounded-full px-2.5 py-1.5 flex items-center gap-4 shadow-sm z-10 backdrop-blur-sm">
+                <ArrowLeft size={16} className="text-white cursor-pointer" onClick={(e) => { e.stopPropagation(); goPrev(); }} />
+                <ArrowRight size={16} className="text-white cursor-pointer" onClick={(e) => { e.stopPropagation(); goNext(); }} />
+              </div>
+            </div>
+
+            <div className="px-4">
+              {/* Rating row */}
+              <div className="flex items-center gap-3 text-xs select-none mb-2">
+                <div className="flex items-center gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={14} className={i < 4 ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'} />)}
+                </div>
+                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                <span className="flex items-center gap-1 text-brand-gray"><MessageSquare size={12} /> 32 reviews</span>
+                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                <span className="flex items-center gap-1 text-brand-gray"><ShoppingBag size={12} /> 154 sold</span>
+              </div>
+
+              {/* Product title */}
+              <h1 className="text-base font-bold text-brand-dark mb-1">Product name goes here</h1>
+
+              {/* Price */}
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-[#eb001b] font-bold text-xl">$129.95</span>
+                <span className="text-xs text-brand-gray">(50-100 pcs)</span>
+              </div>
+
+              {/* Send inquiry + heart */}
+              <div className="flex gap-2 mb-4">
+                <button className="flex-1 bg-brand-blue hover:bg-blue-700 text-white rounded-lg py-3 font-semibold text-sm cursor-pointer transition-colors">Send inquiry</button>
+                <button className="w-12 h-12 border border-brand-blue rounded-lg flex items-center justify-center cursor-pointer hover:bg-blue-50 transition-colors bg-white">
+                  <Heart size={20} className="text-brand-blue" />
+                </button>
+              </div>
+
+              {/* Attributes */}
+              <div className="flex flex-col gap-2.5 text-sm mb-4">
+                {[{ k: 'Condition', v: 'Brand new' }, { k: 'Material', v: 'Plastic' }, { k: 'Category', v: 'Electronics, gadgets' }, { k: 'Item num', v: '23421' }].map((a, i) => (
+                  <div key={i} className="flex"><span className="w-24 flex-shrink-0 text-brand-gray">{a.k}</span><span className="text-brand-dark">{a.v}</span></div>
+                ))}
+              </div>
+
+              {/* Description */}
+              <div className="text-sm text-brand-gray leading-relaxed mb-2">
+                Info about edu item is an ideal companion for anyone engaged in learning. The drone provides precise and ...
+              </div>
+              <span className="text-brand-blue font-semibold text-sm cursor-pointer block">Read more</span>
             </div>
           </div>
-
-          <div className="relative bg-white rounded-md mb-4">
-            <div className="h-[300px] flex items-center justify-center p-6 overflow-hidden select-none">
-              <img src={activeImage} alt="Product" className="max-h-full max-w-full object-contain" />
-            </div>
-            <button onClick={goPrev} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center shadow cursor-pointer"><ChevronLeft size={18} /></button>
-            <button onClick={goNext} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 rounded-full flex items-center justify-center shadow cursor-pointer"><ChevronRight size={18} /></button>
-          </div>
-
-          {/* Rating row */}
-          <div className="flex items-center gap-3 text-xs select-none mb-2 px-1">
-            <div className="flex items-center gap-0.5">
-              {Array.from({length:5}).map((_,i) => <Star key={i} size={14} className={i<4?'text-[#ff9017] fill-[#ff9017]':'text-gray-300'} />)}
-            </div>
-            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-            <span className="flex items-center gap-1 text-brand-gray"><MessageSquare size={12} /> 32 reviews</span>
-            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-            <span className="flex items-center gap-1 text-brand-gray"><ShoppingBag size={12} /> 154 sold</span>
-          </div>
-
-          {/* Product title */}
-          <h1 className="text-base font-bold text-brand-dark mb-1 px-1">Product name goes here</h1>
-
-          {/* Price */}
-          <div className="flex items-baseline gap-2 mb-3 px-1">
-            <span className="text-[#eb001b] font-bold text-lg">$129.95</span>
-            <span className="text-xs text-brand-gray">(50-100 pcs)</span>
-          </div>
-
-          {/* Send inquiry + heart */}
-          <div className="flex gap-2 mb-4 px-1">
-            <button className="flex-1 bg-brand-blue hover:bg-blue-700 text-white rounded-lg py-3 font-semibold text-sm cursor-pointer transition-colors">Send inquiry</button>
-            <button className="w-12 h-12 border border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-red-50 transition-colors bg-white">
-              <Heart size={20} className="text-brand-blue" />
-            </button>
-          </div>
-
-          {/* Attributes */}
-          <div className="flex flex-col gap-2.5 text-sm px-1 mb-4">
-            {[{k:'Condition',v:'Brand new'},{k:'Material',v:'Plastic'},{k:'Category',v:'Electronics, gadgets'},{k:'Item num',v:'23421'}].map((a,i) => (
-              <div key={i} className="flex"><span className="w-24 flex-shrink-0 text-brand-gray">{a.k}</span><span className="text-brand-dark">{a.v}</span></div>
-            ))}
-          </div>
-
-          {/* Description */}
-          <div className="text-sm text-brand-gray leading-relaxed mb-2 px-1">
-            Info about edu item is an ideal companion for anyone engaged in learning. The drone provides precise and ...
-          </div>
-          <span className="text-brand-blue font-semibold text-sm cursor-pointer px-1 mb-5 block">Read more</span>
 
           {/* Mobile Supplier Card (combining info and badges) */}
-          <div className="border border-gray-200 rounded-lg mx-1 mb-6 bg-white overflow-hidden">
+          <div className="border border-gray-200 rounded-lg mx-4 mb-6 bg-white overflow-hidden">
             {/* Info */}
             <div className="p-4 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors">
               <div className="w-11 h-11 bg-[#c5f2f2] text-[#4ca2a2] rounded-md font-bold text-xl flex items-center justify-center flex-shrink-0">R</div>
@@ -166,15 +173,15 @@ const ProductDetails = ({ onNavigate }) => {
               </div>
               <ChevronRight size={18} className="text-gray-400" />
             </div>
-            
+
             {/* Divider line */}
             <hr className="border-gray-200 mx-4" />
 
             {/* Badges */}
             <div className="px-4 py-3.5 flex flex-wrap items-center gap-4 text-xs text-brand-gray select-none bg-white">
-              <span className="flex items-center gap-1"><img src="https://flagcdn.com/w20/de.png" alt="DE" className="w-5"/> Germany</span>
-              <span className="flex items-center gap-1"><ShieldCheck size={14} className="text-gray-400"/> Verified</span>
-              <span className="flex items-center gap-1"><Globe size={14} className="text-gray-400"/> Shipping</span>
+              <span className="flex items-center gap-1"><img src="https://flagcdn.com/w20/de.png" alt="DE" className="w-5" /> Germany</span>
+              <span className="flex items-center gap-1"><ShieldCheck size={14} className="text-gray-400" /> Verified</span>
+              <span className="flex items-center gap-1"><Globe size={14} className="text-gray-400" /> Shipping</span>
             </div>
           </div>
 
@@ -196,27 +203,26 @@ const ProductDetails = ({ onNavigate }) => {
         {/* ====== DESKTOP PRODUCT INFO BLOCK ====== */}
         <div className="bg-white border border-gray-200 rounded-md p-6 mb-6 shadow-sm hidden md:block">
           <div className="grid grid-cols-12 gap-8">
-            
+
             {/* Left Column: Image Gallery (Span 5) */}
             <div className="col-span-12 md:col-span-5 flex flex-col">
               {/* Big active preview */}
               <div className="h-[250px] md:h-[380px] w-full border border-gray-200 rounded-md flex items-center justify-center p-4 bg-white relative overflow-hidden select-none">
-                <img 
-                  src={activeImage} 
-                  alt="Active product view" 
-                  className="max-h-full max-w-full object-contain transition-all duration-300 hover:scale-105" 
+                <img
+                  src={activeImage}
+                  alt="Active product view"
+                  className="max-h-full max-w-full object-contain transition-all duration-300 hover:scale-105"
                 />
               </div>
 
               {/* Thumbnails row */}
               <div className="grid grid-cols-6 gap-2 mt-3 select-none">
                 {thumbnails.map((thumb, idx) => (
-                  <div 
+                  <div
                     key={idx}
                     onClick={() => setActiveImage(thumb)}
-                    className={`h-[56px] border rounded-md flex items-center justify-center p-1 cursor-pointer bg-white transition-all overflow-hidden ${
-                      activeImage === thumb ? 'border-brand-blue border-2 shadow-sm' : 'border-gray-200 hover:border-brand-blue'
-                    }`}
+                    className={`h-[56px] border rounded-md flex items-center justify-center p-1 cursor-pointer bg-white transition-all overflow-hidden ${activeImage === thumb ? 'border-brand-blue border-2 shadow-sm' : 'border-gray-200 hover:border-brand-blue'
+                      }`}
                   >
                     <img src={thumb} alt={`Thumbnail ${idx}`} className="max-h-full max-w-full object-contain" />
                   </div>
@@ -238,13 +244,13 @@ const ProductDetails = ({ onNavigate }) => {
               </h1>
 
               {/* Reviews & Orders */}
-              <div className="flex items-center gap-4 text-xs select-none mb-4 border-b border-gray-100 pb-4">
+              <div className="flex items-center gap-4 text-xs select-none mb-3">
                 <div className="flex items-center gap-0.5">
                   {Array.from({ length: 5 }).map((_, sIdx) => (
-                    <Star 
-                      key={sIdx} 
-                      size={14} 
-                      className={sIdx < 4 ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'} 
+                    <Star
+                      key={sIdx}
+                      size={14}
+                      className={sIdx < 4 ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'}
                     />
                   ))}
                   <span className="text-[#ff9017] font-bold ml-1.5">9.3</span>
@@ -280,42 +286,51 @@ const ProductDetails = ({ onNavigate }) => {
               </div>
 
               {/* Attributes table */}
-              <div className="flex flex-col gap-3 text-sm text-brand-dark select-none">
+              <div className="flex flex-col text-sm text-brand-dark select-none mt-1">
+                <hr className="border-gray-200 mb-3" />
+
                 <div className="flex items-baseline">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Price:</span>
                   <span className="text-brand-dark">Negotiable</span>
                 </div>
+
+                <hr className="border-gray-200 my-3" />
+
                 <div className="flex items-baseline">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Type:</span>
                   <span className="text-brand-dark">Classic shoes</span>
                 </div>
-                <div className="flex items-baseline">
+                <div className="flex items-baseline mt-3">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Material:</span>
                   <span className="text-brand-dark">Plastic material</span>
                 </div>
-                <div className="flex items-baseline pb-3 border-b border-gray-100">
+                <div className="flex items-baseline mt-3">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Design:</span>
                   <span className="text-brand-dark">Modern nice</span>
                 </div>
 
-                <div className="flex items-baseline mt-2">
-                  <span className="w-32 flex-shrink-0 text-brand-gray">Customization:</span>
-                  <span className="text-brand-dark">Customized logo and design custom packages</span>
-                </div>
+                <hr className="border-gray-200 my-3" />
+
                 <div className="flex items-baseline">
+                  <span className="w-32 flex-shrink-0 text-brand-gray">Customization:</span>
+                  <span className="text-brand-dark max-w-[200px] leading-snug">Customized logo and design custom packages</span>
+                </div>
+                <div className="flex items-baseline mt-3">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Protection:</span>
                   <span className="text-brand-dark">Refund Policy</span>
                 </div>
-                <div className="flex items-baseline">
+                <div className="flex items-baseline mt-3">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Warranty:</span>
                   <span className="text-brand-dark">2 years full warranty</span>
                 </div>
+
+                <hr className="border-gray-200 mt-3" />
               </div>
             </div>
 
             {/* Right Column: Supplier Info Card & Main Action Buttons (Span 3) */}
             <div className="col-span-12 md:col-span-3 flex flex-col gap-4 select-none">
-              
+
               {/* Supplier Info box */}
               <div className="border border-gray-200 rounded-md p-4 flex flex-col gap-4 bg-white shadow-sm">
                 {/* Header row */}
@@ -328,9 +343,9 @@ const ProductDetails = ({ onNavigate }) => {
                     <span className="text-sm font-semibold text-brand-dark">Guanjoi Trading LLC</span>
                   </div>
                 </div>
-                
+
                 <hr className="border-gray-100" />
-                
+
                 {/* Contact properties */}
                 <div className="flex flex-col gap-2.5 text-xs text-brand-gray">
                   <div className="flex items-center gap-2">
@@ -368,7 +383,7 @@ const ProductDetails = ({ onNavigate }) => {
 
         {/* Details Bottom Block: Description + Recommended (Sidebar) - desktop only */}
         <div className="hidden md:grid grid-cols-12 gap-6 mb-6">
-          
+
           {/* Main Description Column (Span 9) */}
           <div className="col-span-12 lg:col-span-9 flex flex-col bg-white border border-gray-200 rounded-md p-6 shadow-sm">
             {/* Tabs Bar */}
@@ -377,11 +392,10 @@ const ProductDetails = ({ onNavigate }) => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-3 md:px-5 py-3 text-xs md:text-sm font-semibold capitalize transition-all border-b-2 -mb-px whitespace-nowrap flex-shrink-0 cursor-pointer ${
-                    activeTab === tab 
-                      ? 'border-brand-blue text-brand-blue' 
+                  className={`px-3 md:px-5 py-3 text-xs md:text-sm font-semibold capitalize transition-all border-b-2 -mb-px whitespace-nowrap flex-shrink-0 cursor-pointer ${activeTab === tab
+                      ? 'border-brand-blue text-brand-blue'
                       : 'border-transparent text-brand-gray hover:text-brand-dark'
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>
@@ -393,14 +407,14 @@ const ProductDetails = ({ onNavigate }) => {
               <div className="flex flex-col gap-6">
                 <div className="text-brand-gray text-sm leading-relaxed flex flex-col gap-4">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et 
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea 
-                    commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat 
-                    nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut 
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+                    commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+                    nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
                     labore et dolore magna aliqua. Ut enim ad minim veniam,
                   </p>
                   <p>
-                    Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+                    Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
                     reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                   </p>
                 </div>
@@ -449,12 +463,11 @@ const ProductDetails = ({ onNavigate }) => {
                 <div key={item.id} className="flex gap-3 items-center group cursor-pointer" onClick={() => onNavigate('product-details')}>
                   {/* Thumbnail box */}
                   <div className="w-[80px] h-[80px] border border-gray-100 rounded-md flex items-center justify-center p-1.5 flex-shrink-0 bg-white overflow-hidden">
-                    <img 
-                      src={item.img} 
-                      alt={item.title} 
-                      className={`max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105 ${
-                        item.img === tech7 ? 'scale-[1.3]' : ''
-                      }`} 
+                    <img
+                      src={item.img}
+                      alt={item.title}
+                      className={`max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105 ${item.img === tech7 ? 'scale-[1.3]' : ''
+                        }`}
                     />
                   </div>
                   {/* Info details */}
@@ -480,21 +493,20 @@ const ProductDetails = ({ onNavigate }) => {
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {relatedProducts.map((p) => (
-              <div 
-                key={p.id} 
+              <div
+                key={p.id}
                 className="flex flex-col group cursor-pointer select-none"
                 onClick={() => onNavigate('product-details')}
               >
                 {/* Image wrapper */}
                 <div className="h-[140px] border border-gray-100 rounded-md flex items-center justify-center p-3 mb-3 bg-white overflow-hidden">
-                  <img 
-                    src={p.img} 
-                    alt={p.title} 
-                    className={`max-h-[90%] max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-110 ${
-                      p.img === tech7 ? 'scale-[1.35]' : 
-                      p.img === tech8 ? 'scale-[1.35]' :
-                      p.img === tech4 ? 'scale-[1.35]' : ''
-                    }`} 
+                  <img
+                    src={p.img}
+                    alt={p.title}
+                    className={`max-h-[90%] max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-110 ${p.img === tech7 ? 'scale-[1.35]' :
+                        p.img === tech8 ? 'scale-[1.35]' :
+                          p.img === tech4 ? 'scale-[1.35]' : ''
+                      }`}
                   />
                 </div>
                 {/* Details */}
