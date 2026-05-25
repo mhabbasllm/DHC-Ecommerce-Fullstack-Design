@@ -113,8 +113,9 @@ const Header = ({ onNavigate, currentPage }) => {
         <nav className="bg-white border-b border-gray-200 py-2.5 select-none hidden md:block">
           <div className="container flex justify-between items-center">
             <div className="flex gap-6 font-medium text-brand-dark">
-              <span className="flex items-center gap-1 cursor-pointer hover:text-brand-blue transition-colors" onClick={handleProductsClick}>
-                <Menu size={18} /> All category
+              <span className="flex items-center gap-1 cursor-pointer group" onClick={handleProductsClick}>
+                <Menu size={18} className="text-brand-dark" />
+                <span className="group-hover:text-brand-blue transition-colors">All category</span>
               </span>
               <span className="cursor-pointer hover:text-brand-blue transition-colors" onClick={handleProductsClick}>Hot offers</span>
               <span className="cursor-pointer hover:text-brand-blue transition-colors" onClick={handleProductsClick}>Gift boxes</span>
@@ -194,8 +195,8 @@ const Header = ({ onNavigate, currentPage }) => {
               <span
                 key={idx}
                 className={`whitespace-nowrap text-xs font-medium px-3 py-1.5 rounded-md border cursor-pointer transition-colors flex-shrink-0 ${idx === 0
-                    ? 'bg-brand-blue text-white border-brand-blue'
-                    : 'bg-white text-brand-dark border-gray-300 hover:border-brand-blue hover:text-brand-blue'
+                  ? 'bg-brand-blue text-white border-brand-blue'
+                  : 'bg-white text-brand-dark border-gray-300 hover:border-brand-blue hover:text-brand-blue'
                   }`}
                 onClick={handleProductsClick}
               >

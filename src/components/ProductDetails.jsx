@@ -96,7 +96,7 @@ const ProductDetails = ({ onNavigate }) => {
 
         {/* ====== MOBILE PRODUCT VIEW ====== */}
         <div className="md:hidden">
-          <div className="bg-white pb-5">
+          <div className="bg-white pb-5 border-b border-gray-200">
             {/* Mobile header: back + cart + user */}
             <div className="flex items-center justify-between py-3 px-4 mb-2">
               <button onClick={() => onNavigate('products')} className="text-brand-dark p-1 cursor-pointer">
@@ -163,7 +163,7 @@ const ProductDetails = ({ onNavigate }) => {
           </div>
 
           {/* Mobile Supplier Card (combining info and badges) */}
-          <div className="border border-gray-200 rounded-lg mx-4 mb-6 bg-white overflow-hidden">
+          <div className="border border-gray-200 rounded-lg mx-4 mt-4 mb-6 bg-white overflow-hidden">
             {/* Info */}
             <div className="p-4 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors">
               <div className="w-11 h-11 bg-[#c5f2f2] text-[#4ca2a2] rounded-md font-bold text-xl flex items-center justify-center flex-shrink-0">R</div>
@@ -393,8 +393,8 @@ const ProductDetails = ({ onNavigate }) => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`px-3 md:px-5 py-3 text-xs md:text-sm font-semibold capitalize transition-all border-b-2 -mb-px whitespace-nowrap flex-shrink-0 cursor-pointer ${activeTab === tab
-                      ? 'border-brand-blue text-brand-blue'
-                      : 'border-transparent text-brand-gray hover:text-brand-dark'
+                    ? 'border-brand-blue text-brand-blue'
+                    : 'border-transparent text-brand-gray hover:text-brand-dark'
                     }`}
                 >
                   {tab}
@@ -504,8 +504,8 @@ const ProductDetails = ({ onNavigate }) => {
                     src={p.img}
                     alt={p.title}
                     className={`max-h-[90%] max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-110 ${p.img === tech7 ? 'scale-[1.35]' :
-                        p.img === tech8 ? 'scale-[1.35]' :
-                          p.img === tech4 ? 'scale-[1.35]' : ''
+                      p.img === tech8 ? 'scale-[1.35]' :
+                        p.img === tech4 ? 'scale-[1.35]' : ''
                       }`}
                   />
                 </div>
