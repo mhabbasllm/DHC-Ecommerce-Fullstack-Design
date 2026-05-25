@@ -1,9 +1,9 @@
 import React from 'react';
-import { 
+import {
   User,
-  SearchCode, 
-  ShieldCheck, 
-  Send, 
+  SearchCode,
+  ShieldCheck,
+  Send,
   Package,
   Mail,
   ArrowRight,
@@ -127,8 +127,8 @@ const MainBody = ({ onNavigate }) => {
             <div className="category-sidebar">
               <ul className="space-y-1">
                 {['Automobiles', 'Clothes and wear', 'Home interiors', 'Computer and tech', 'Tools, equipments', 'Sports and outdoor', 'Animal and pets', 'Machinery tools', 'More category'].map((cat, idx) => (
-                  <li 
-                    key={idx} 
+                  <li
+                    key={idx}
                     className={`p-2.5 rounded-md cursor-pointer transition-colors hover:bg-blue-50 ${idx === 0 ? 'bg-blue-50 font-medium' : ''}`}
                     onClick={handleProductsClick}
                   >
@@ -140,7 +140,7 @@ const MainBody = ({ onNavigate }) => {
             <div className="rounded-md p-10 flex flex-col justify-center min-h-[350px] bg-cover bg-center relative" style={{ backgroundImage: `url(${heroBanner})` }}>
               <h2 className="text-2xl mb-2.5">Latest trending</h2>
               <h1 className="text-4xl font-bold mb-5">Electronic items</h1>
-              <button 
+              <button
                 className="bg-white text-black px-6 py-2 rounded-md font-medium w-fit shadow-sm hover:bg-gray-50 transition-colors"
                 onClick={handleProductsClick}
               >
@@ -159,7 +159,7 @@ const MainBody = ({ onNavigate }) => {
                       <p className="text-base font-bold text-brand-blue">{user.fullName}</p>
                     </div>
                   </div>
-                  <button 
+                  <button
                     className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-2"
                     onClick={handleLogout}
                   >
@@ -171,15 +171,15 @@ const MainBody = ({ onNavigate }) => {
                 <div className="bg-[#e3f0ff] p-4 rounded-md">
                   <div className="flex items-center gap-2.5 mb-4">
                     <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-                    <p className="text-sm">Hi, user<br/>let's get stated</p>
+                    <p className="text-sm">Hi, user<br />let's get stated</p>
                   </div>
-                  <button 
+                  <button
                     className="w-full bg-brand-blue hover:bg-blue-700 text-white py-2 rounded-md font-medium mb-2.5 transition-colors cursor-pointer shadow-sm"
                     onClick={() => onNavigate('register')}
                   >
                     Join now
                   </button>
-                  <button 
+                  <button
                     className="w-full bg-white hover:bg-gray-50 text-brand-blue py-2 rounded-md border border-gray-200 font-medium transition-colors cursor-pointer shadow-sm"
                     onClick={() => onNavigate('login')}
                   >
@@ -201,7 +201,7 @@ const MainBody = ({ onNavigate }) => {
         <div className="md:hidden p-6 flex flex-col justify-center min-h-[180px] bg-cover bg-center relative" style={{ backgroundImage: `url(${heroBanner})` }}>
           <h2 className="text-[#1c1c1c] text-lg mb-1">Latest trending</h2>
           <h1 className="text-[#1c1c1c] text-2xl font-bold mb-4">Electronic items</h1>
-          <button 
+          <button
             className="bg-white text-brand-blue px-5 py-2 rounded-md font-semibold w-fit shadow-sm text-sm hover:bg-gray-50 transition-colors"
             onClick={handleProductsClick}
           >
@@ -218,7 +218,7 @@ const MainBody = ({ onNavigate }) => {
             <h3 className="text-lg font-bold">Deals and offers</h3>
             <p className="text-brand-gray text-sm">Hygiene equipments</p>
             <div className="flex gap-2.5 mt-5">
-              {[{v:'04',l:'Days'},{v:'13',l:'Hour'},{v:'34',l:'Min'},{v:'56',l:'Sec'}].map((t, idx) => (
+              {[{ v: '04', l: 'Days' }, { v: '13', l: 'Hour' }, { v: '34', l: 'Min' }, { v: '56', l: 'Sec' }].map((t, idx) => (
                 <div key={idx} className="bg-[#606060] text-white p-2 rounded-md text-center min-w-[45px]">
                   <span className="block text-base font-bold">{t.v}</span>
                   <label className="text-[10px] block">{t.l}</label>
@@ -228,8 +228,8 @@ const MainBody = ({ onNavigate }) => {
           </div>
           <div className="flex-1 grid grid-cols-5">
             {dealsItems.map((item, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className="p-5 text-center border-r border-gray-200 last:border-r-0 hover:shadow-inner transition-shadow cursor-pointer"
                 onClick={handleProductsClick}
               >
@@ -251,7 +251,7 @@ const MainBody = ({ onNavigate }) => {
               <p className="text-brand-gray text-xs">Electronic equipments</p>
             </div>
             <div className="flex gap-1.5">
-              {[{v:'13',l:'Hour'},{v:'34',l:'Min'},{v:'56',l:'Sec'}].map((t, idx) => (
+              {[{ v: '13', l: 'Hour' }, { v: '34', l: 'Min' }, { v: '56', l: 'Sec' }].map((t, idx) => (
                 <div key={idx} className="bg-[#eff2f4] text-[#8b96a5] px-2.5 py-1 rounded text-center min-w-[38px] border border-[#e0e0e0]">
                   <span className="block text-sm font-bold text-[#1c1c1c]">{t.v}</span>
                   <label className="text-[8px] block">{t.l}</label>
@@ -268,8 +268,8 @@ const MainBody = ({ onNavigate }) => {
             { img: tech3, title: 'Smart watches', discount: '-25%' },
             { img: tech1, title: 'Smart watches', discount: '-25%' },
           ].map((item, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               className="p-4 text-center border-r border-gray-200 last:border-r-0 cursor-pointer flex-shrink-0 min-w-[120px]"
               onClick={handleProductsClick}
             >
@@ -287,7 +287,7 @@ const MainBody = ({ onNavigate }) => {
         <div className="flex bg-white border border-gray-200 rounded-md overflow-hidden">
           <div className="w-[280px] p-5 bg-cover bg-center flex flex-col" style={{ backgroundImage: `url(${homeBanner})` }}>
             <h3 className="text-xl font-bold mb-5 max-w-[150px]">Home and outdoor</h3>
-            <button 
+            <button
               className="bg-white text-black px-4 py-2 rounded-md font-medium w-fit hover:bg-gray-50 transition-colors"
               onClick={handleProductsClick}
             >
@@ -296,14 +296,14 @@ const MainBody = ({ onNavigate }) => {
           </div>
           <div className="flex-1 grid grid-cols-4 grid-rows-2">
             {homeOutdoorItems.map((item, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className="p-4 border-r border-b border-gray-200 flex justify-between items-end hover:bg-gray-50 transition-colors cursor-pointer"
                 onClick={handleProductsClick}
               >
                 <div>
                   <h4 className="text-sm font-medium mb-1">{item.title}</h4>
-                  <p className="text-xs text-brand-gray">From <br/>USD {item.price}</p>
+                  <p className="text-xs text-brand-gray">From <br />USD {item.price}</p>
                 </div>
                 <img src={item.img} alt={item.title} className="w-16 h-16 object-contain" />
               </div>
@@ -323,8 +323,8 @@ const MainBody = ({ onNavigate }) => {
             { img: null, title: 'Smart watches', price: '19' },
             { img: int1, title: 'Smart watches', price: '19' },
           ].map((item, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               className="p-3 text-center border-r border-gray-200 last:border-r-0 cursor-pointer flex-shrink-0 min-w-[120px] flex flex-col justify-between"
               onClick={handleProductsClick}
             >
@@ -355,7 +355,7 @@ const MainBody = ({ onNavigate }) => {
         <div className="flex bg-white border border-gray-200 rounded-md overflow-hidden">
           <div className="w-[280px] p-5 bg-cover bg-center flex flex-col" style={{ backgroundImage: `url(${techBannerBg})` }}>
             <h3 className="text-xl font-bold mb-5 max-w-[150px]">Consumer electronics and gadgets</h3>
-            <button 
+            <button
               className="bg-white text-black px-4 py-2 rounded-md font-medium w-fit hover:bg-gray-50 transition-colors"
               onClick={handleProductsClick}
             >
@@ -364,14 +364,14 @@ const MainBody = ({ onNavigate }) => {
           </div>
           <div className="flex-1 grid grid-cols-4 grid-rows-2">
             {techItems.map((item, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className="p-4 border-r border-b border-gray-200 flex justify-between items-end hover:bg-gray-50 transition-colors cursor-pointer"
                 onClick={handleProductsClick}
               >
                 <div>
                   <h4 className="text-sm font-medium mb-1">{item.title}</h4>
-                  <p className="text-xs text-brand-gray">From <br/>USD {item.price}</p>
+                  <p className="text-xs text-brand-gray">From <br />USD {item.price}</p>
                 </div>
                 <img src={item.img} alt={item.title} className="w-16 h-16 object-contain" />
               </div>
@@ -391,8 +391,8 @@ const MainBody = ({ onNavigate }) => {
             { img: tech4, title: 'Smart watches', price: '19' },
             { img: tech7, title: 'Smart watches', price: '19' },
           ].map((item, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               className="p-3 text-center border-r border-gray-200 last:border-r-0 cursor-pointer flex-shrink-0 min-w-[120px] flex flex-col justify-between"
               onClick={handleProductsClick}
             >
@@ -438,7 +438,7 @@ const MainBody = ({ onNavigate }) => {
       {/* Mobile */}
       <section className="md:hidden bg-cover bg-center py-6 px-4 text-white relative overflow-hidden mt-3" style={{ backgroundImage: `linear-gradient(rgba(0, 102, 255, 0.55), rgba(0, 102, 255, 0.55)), url(${inquiryBg})` }}>
         <h2 className="text-xl font-bold mb-2 leading-tight">An easy way to send requests to all suppliers</h2>
-        <button 
+        <button
           className="bg-brand-blue text-white px-5 py-2 rounded-md font-semibold text-sm mt-2 hover:bg-blue-700 transition-colors"
           onClick={handleProductsClick}
         >
@@ -449,12 +449,12 @@ const MainBody = ({ onNavigate }) => {
       {/* ====== Recommended Items ====== */}
       <section className="container mt-6 md:mt-8">
         <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-5 px-4 md:px-0">Recommended items</h2>
-        
+
         {/* Desktop: 5 columns */}
         <div className="hidden md:grid grid-cols-5 gap-5">
           {recommendedItems.map((item, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               className="bg-white border border-gray-200 rounded-md p-4 hover:shadow-md transition-shadow cursor-pointer"
               onClick={handleProductsClick}
             >
@@ -473,8 +473,8 @@ const MainBody = ({ onNavigate }) => {
             { img: int4, price: '10.30', title: 'T-shirts with multiple colors, for men' },
             { img: int2, price: '10.30', title: 'T-shirts with multiple colors, for men' },
           ].map((item, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               className="bg-white border border-gray-200 rounded-md p-3 hover:shadow-sm transition-shadow cursor-pointer flex flex-col justify-between"
               onClick={handleProductsClick}
             >
