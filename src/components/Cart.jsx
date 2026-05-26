@@ -27,51 +27,11 @@ import tech7 from '../assets/Image/tech/image 33.png';
 import interior1 from '../assets/Image/interior/1.png';
 import interior3 from '../assets/Image/interior/3.png';
 
-const Cart = ({ onNavigate }) => {
-  // Main Cart Items
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      img: cloth1, // Blue polo shirt
-      title: 'T-shirts with multiple colors, for men and lady',
-      size: 'medium',
-      color: 'blue',
-      material: 'Plastic',
-      seller: 'Artel Market',
-      price: 78.99,
-      qty: 9
-    },
-    {
-      id: 2,
-      img: cloth6, // Blue backpack
-      title: 'T-shirts with multiple colors, for men and lady',
-      size: 'medium',
-      color: 'blue',
-      material: 'Plastic',
-      seller: 'Best factory LLC',
-      price: 39.00,
-      qty: 3
-    },
-    {
-      id: 3,
-      img: interior3, // Table lamp
-      title: 'T-shirts with multiple colors, for men and lady',
-      size: 'medium',
-      color: 'blue',
-      material: 'Plastic',
-      seller: 'Artel Market',
-      price: 170.50,
-      qty: 1
-    }
-  ]);
+import { useCart } from './CartContext';
 
-  // Saved for Later list
-  const [savedItems, setSavedItems] = useState([
-    { id: 101, img: tech6, title: 'GoPro HERO6 4K Action Camera - Black', price: 99.50 }, // Tablet
-    { id: 102, img: tech2, title: 'GoPro HERO6 4K Action Camera - Black', price: 99.50 }, // Blue phone
-    { id: 103, img: tech7, title: 'GoPro HERO6 4K Action Camera - Black', price: 99.50 }, // Watch
-    { id: 104, img: tech5, title: 'GoPro HERO6 4K Action Camera - Black', price: 99.50 }  // Laptop
-  ]);
+const Cart = ({ onNavigate }) => {
+  const { cartItems, removeFromCart, updateQuantity, clearCart, addToCart } = useCart();
+  const [savedItems, setSavedItems] = useState([]);
 
   const [couponCode, setCouponCode] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
@@ -85,11 +45,11 @@ const Cart = ({ onNavigate }) => {
 
   // Handlers
   const handleQtyChange = (id, val) => {
-    setCartItems(prev => prev.map(item => item.id === id ? { ...item, qty: parseInt(val) } : item));
+    updateQuantity(id, parseInt(val));
   };
 
   const handleRemoveItem = (id) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+    removeFromCart(id);
   };
 
   const handleSaveForLater = (id) => {
@@ -99,7 +59,7 @@ const Cart = ({ onNavigate }) => {
     // Add to saved list
     setSavedItems(prev => [
       ...prev,
-      { id: Date.now(), img: item.img, title: item.title, price: 99.50 }
+      { id: Date.now(), img: item.img, title: item.title, price: item.price }
     ]);
 
     // Remove from cart
@@ -107,28 +67,12 @@ const Cart = ({ onNavigate }) => {
   };
 
   const handleMoveToCart = (item) => {
-    // Add to cart list
-    setCartItems(prev => [
-      ...prev,
-      {
-        id: Date.now(),
-        img: item.img,
-        title: 'T-shirts with multiple colors, for men and lady',
-        size: 'medium',
-        color: 'blue',
-        material: 'Plastic',
-        seller: 'Artel Market',
-        price: item.price,
-        qty: 1
-      }
-    ]);
-
-    // Remove from saved list
+    addToCart(item, 1);
     setSavedItems(prev => prev.filter(i => i.id !== item.id));
   };
 
   const handleRemoveAll = () => {
-    setCartItems([]);
+    clearCart();
   };
 
   const applyCoupon = () => {

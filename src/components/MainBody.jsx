@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   User,
   SearchCode,
@@ -55,6 +55,7 @@ import flagGB from '../assets/Layout1/Image/flags/GB@2x.png';
 import flagIT from '../assets/Layout1/Image/flags/IT@2x.png';
 import flagRU from '../assets/Layout1/Image/flags/RU@2x.png';
 import flagUS from '../assets/Layout1/Image/flags/US@2x.png';
+import { getHomepageSections } from '../services/productService';
 
 const getAssetUrl = (path) => {
   // Simple helper to resolve relative paths from src/assets
@@ -62,11 +63,22 @@ const getAssetUrl = (path) => {
   return new URL(path, import.meta.url).href;
 };
 
+const formatPrice = (price) => Number(price || 0).toFixed(2);
+
 const MainBody = ({ onNavigate }) => {
   const { isAuthenticated, user, logout } = useAuth();
+  const [homepageSections, setHomepageSections] = useState(null);
 
   const handleProductsClick = () => {
     if (onNavigate) onNavigate('products');
+  };
+
+  const handleProductClick = (product) => {
+    if (product?.id) {
+      onNavigate('product-details', { productId: product.id });
+    } else {
+      handleProductsClick();
+    }
   };
 
   const handleLogout = () => {
@@ -74,48 +86,70 @@ const MainBody = ({ onNavigate }) => {
     onNavigate('home');
   };
 
-  const dealsItems = [
-    { img: tech7, title: 'Smart watches', discount: '-25%' },
-    { img: tech5, title: 'Laptops', discount: '-15%' },
-    { img: tech3, title: 'GoPro cameras', discount: '-40%' },
-    { img: tech2, title: 'Headphones', discount: '-25%' },
-    { img: tech1, title: 'Canon camreras', discount: '-25%' },
-  ];
+  useEffect(() => {
+    let isMounted = true;
 
-  const homeOutdoorItems = [
-    { title: 'Soft chairs', price: '19', img: int1 },
-    { title: 'Sofa & chair', price: '19', img: int2 },
-    { title: 'Kitchen dishes', price: '19', img: int3 },
-    { title: 'Smart watches', price: '19', img: int4 },
-    { title: 'Kitchen mixer', price: '100', img: int5 },
-    { title: 'Blenders', price: '39', img: int6 },
-    { title: 'Home appliance', price: '19', img: int7 },
-    { title: 'Coffee maker', price: '10', img: int8 },
-  ];
+    const loadHomepageProducts = async () => {
+      try {
+        const data = await getHomepageSections();
+        if (isMounted) {
+          setHomepageSections(data);
+        }
+      } catch (error) {
+        console.error('Failed to load homepage products:', error);
+      }
+    };
 
-  const techItems = [
-    { title: 'Smart watches', price: '19', img: tech7 },
-    { title: 'Cameras', price: '89', img: tech3 },
-    { title: 'Headphones', price: '10', img: tech8 },
-    { title: 'Smart watches', price: '90', img: tech4 },
-    { title: 'Gaming set', price: '35', img: tech2 },
-    { title: 'Laptops & PC', price: '340', img: tech5 },
-    { title: 'Smartphones', price: '19', img: tech6 },
-    { title: 'Electric kettle', price: '240', img: tech9 },
-  ];
+    loadHomepageProducts();
 
-  const recommendedItems = [
-    { img: cloth1, price: '10.30', title: 'T-shirts with multiple colors, for men' },
-    { img: cloth2, price: '10.30', title: 'Jeans shorts for men blue color' },
-    { img: cloth3, price: '12.50', title: 'Brown winter coat medium size' },
-    { img: cloth4, price: '34.00', title: 'Jeans bag for travel for men' },
-    { img: cloth5, price: '99.00', title: 'Leather wallet' },
-    { img: cloth6, price: '9.99', title: 'Canon camera black, 100x zoom' },
-    { img: tech8, price: '8.99', title: 'Headset for gaming with mic' },
-    { img: cloth5, price: '10.30', title: 'Smartwatch silver color modern' },
-    { img: int4, price: '10.30', title: 'Blue wallet for men leather metarfial' },
-    { img: tech4, price: '240.00', title: 'Jeans bag for travel for men' },
-  ];
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const displayDealsItems = useMemo(() => (
+    homepageSections?.dealsAndOffers?.length
+      ? homepageSections.dealsAndOffers.map((deal) => ({
+          id: deal.product?.id,
+          img: deal.product?.imageUrl,
+          title: deal.product?.title,
+          discount: `-${Math.round(deal.discountPercent)}%`,
+        })).filter((item) => item.id)
+      : []
+  ), [homepageSections]);
+
+  const displayHomeOutdoorItems = useMemo(() => (
+    homepageSections?.homeAndOutdoor?.length
+      ? homepageSections.homeAndOutdoor.map((item) => ({
+          id: item.id,
+          title: item.title,
+          price: formatPrice(item.price),
+          img: item.imageUrl,
+        }))
+      : []
+  ), [homepageSections]);
+
+  const displayTechItems = useMemo(() => (
+    homepageSections?.consumerElectronics?.length
+      ? homepageSections.consumerElectronics.map((item) => ({
+          id: item.id,
+          title: item.title,
+          price: formatPrice(item.price),
+          img: item.imageUrl,
+        }))
+      : []
+  ), [homepageSections]);
+
+  const displayRecommendedItems = useMemo(() => (
+    homepageSections?.recommendedItems?.length
+      ? homepageSections.recommendedItems.map((item) => ({
+          id: item.id,
+          img: item.imageUrl,
+          price: formatPrice(item.price),
+          title: item.title,
+        }))
+      : []
+  ), [homepageSections]);
 
   return (
     <main>
@@ -227,11 +261,11 @@ const MainBody = ({ onNavigate }) => {
             </div>
           </div>
           <div className="flex-1 grid grid-cols-5">
-            {dealsItems.map((item, idx) => (
+            {displayDealsItems.slice(0, 5).map((item, idx) => (
               <div
                 key={idx}
                 className="p-5 text-center border-r border-gray-200 last:border-r-0 hover:shadow-inner transition-shadow cursor-pointer"
-                onClick={handleProductsClick}
+                onClick={() => handleProductClick(item)}
               >
                 <img src={item.img} alt={item.title} className="h-28 mx-auto object-contain mb-4" />
                 <p className="text-sm mb-2">{item.title}</p>
@@ -261,17 +295,11 @@ const MainBody = ({ onNavigate }) => {
           </div>
         </div>
         <div className="flex overflow-x-auto no-scrollbar">
-          {[
-            { img: cloth2, title: 'Smart watches', discount: '-25%' },
-            { img: tech2, title: 'Smart watches', discount: '-25%' },
-            { img: tech5, title: 'Smart watches', discount: '-25%' },
-            { img: tech3, title: 'Smart watches', discount: '-25%' },
-            { img: tech1, title: 'Smart watches', discount: '-25%' },
-          ].map((item, idx) => (
+          {displayDealsItems.slice(0, 5).map((item, idx) => (
             <div
               key={idx}
               className="p-4 text-center border-r border-gray-200 last:border-r-0 cursor-pointer flex-shrink-0 min-w-[120px]"
-              onClick={handleProductsClick}
+              onClick={() => handleProductClick(item)}
             >
               <img src={item.img} alt={item.title} className="h-20 mx-auto object-contain mb-3" />
               <p className="text-xs mb-1.5 text-brand-dark">{item.title}</p>
@@ -295,11 +323,11 @@ const MainBody = ({ onNavigate }) => {
             </button>
           </div>
           <div className="flex-1 grid grid-cols-4 grid-rows-2">
-            {homeOutdoorItems.map((item, idx) => (
+            {displayHomeOutdoorItems.slice(0, 8).map((item, idx) => (
               <div
                 key={idx}
                 className="p-4 border-r border-b border-gray-200 flex justify-between items-end hover:bg-gray-50 transition-colors cursor-pointer"
-                onClick={handleProductsClick}
+                onClick={() => handleProductClick(item)}
               >
                 <div>
                   <h4 className="text-sm font-medium mb-1">{item.title}</h4>
@@ -318,15 +346,11 @@ const MainBody = ({ onNavigate }) => {
           <h3 className="text-base font-bold text-brand-dark">Home and outdoor</h3>
         </div>
         <div className="flex overflow-x-auto no-scrollbar">
-          {[
-            { img: int3, title: 'Smart watches', price: '19' },
-            { img: null, title: 'Smart watches', price: '19' },
-            { img: int1, title: 'Smart watches', price: '19' },
-          ].map((item, idx) => (
+          {displayHomeOutdoorItems.slice(0, 3).map((item, idx) => (
             <div
               key={idx}
               className="p-3 text-center border-r border-gray-200 last:border-r-0 cursor-pointer flex-shrink-0 min-w-[120px] flex flex-col justify-between"
-              onClick={handleProductsClick}
+              onClick={() => handleProductClick(item)}
             >
               <div className="h-16 flex items-center justify-center mb-2">
                 {item.img ? (
@@ -363,11 +387,11 @@ const MainBody = ({ onNavigate }) => {
             </button>
           </div>
           <div className="flex-1 grid grid-cols-4 grid-rows-2">
-            {techItems.map((item, idx) => (
+            {displayTechItems.slice(0, 8).map((item, idx) => (
               <div
                 key={idx}
                 className="p-4 border-r border-b border-gray-200 flex justify-between items-end hover:bg-gray-50 transition-colors cursor-pointer"
-                onClick={handleProductsClick}
+                onClick={() => handleProductClick(item)}
               >
                 <div>
                   <h4 className="text-sm font-medium mb-1">{item.title}</h4>
@@ -386,15 +410,11 @@ const MainBody = ({ onNavigate }) => {
           <h3 className="text-base font-bold text-brand-dark">Consumer electronics</h3>
         </div>
         <div className="flex overflow-x-auto no-scrollbar">
-          {[
-            { img: tech6, title: 'Smart watches', price: '19' },
-            { img: tech4, title: 'Smart watches', price: '19' },
-            { img: tech7, title: 'Smart watches', price: '19' },
-          ].map((item, idx) => (
+          {displayTechItems.slice(0, 3).map((item, idx) => (
             <div
               key={idx}
               className="p-3 text-center border-r border-gray-200 last:border-r-0 cursor-pointer flex-shrink-0 min-w-[120px] flex flex-col justify-between"
-              onClick={handleProductsClick}
+              onClick={() => handleProductClick(item)}
             >
               <img src={item.img} alt={item.title} className="h-16 mx-auto object-contain mb-2" />
               <div>
@@ -452,11 +472,11 @@ const MainBody = ({ onNavigate }) => {
 
         {/* Desktop: 5 columns */}
         <div className="hidden md:grid grid-cols-5 gap-5">
-          {recommendedItems.map((item, idx) => (
+          {displayRecommendedItems.slice(0, 10).map((item, idx) => (
             <div
               key={idx}
               className="bg-white border border-gray-200 rounded-md p-4 hover:shadow-md transition-shadow cursor-pointer"
-              onClick={handleProductsClick}
+              onClick={() => handleProductClick(item)}
             >
               <img src={item.img} alt={item.title} className="w-full h-44 object-contain mb-4" />
               <p className="font-bold text-base mb-1">${item.price}</p>
@@ -467,16 +487,11 @@ const MainBody = ({ onNavigate }) => {
 
         {/* Mobile: 2 columns */}
         <div className="grid grid-cols-2 gap-2 px-3 md:hidden">
-          {[
-            { img: cloth1, price: '10.30', title: 'T-shirts with multiple colors, for men' },
-            { img: cloth3, price: '10.30', title: 'T-shirts with multiple colors, for men' },
-            { img: int4, price: '10.30', title: 'T-shirts with multiple colors, for men' },
-            { img: int2, price: '10.30', title: 'T-shirts with multiple colors, for men' },
-          ].map((item, idx) => (
+          {displayRecommendedItems.slice(0, 4).map((item, idx) => (
             <div
               key={idx}
               className="bg-white border border-gray-200 rounded-md p-3 hover:shadow-sm transition-shadow cursor-pointer flex flex-col justify-between"
-              onClick={handleProductsClick}
+              onClick={() => handleProductClick(item)}
             >
               <div className="h-28 flex items-center justify-center mb-3">
                 <img src={item.img} alt={item.title} className="max-h-28 mx-auto object-contain" />

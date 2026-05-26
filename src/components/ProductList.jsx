@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ChevronUp,
   ChevronDown,
@@ -16,36 +16,31 @@ import {
   User
 } from 'lucide-react';
 
-// Import the same tech images for high fidelity
-import tech1 from '../assets/Image/tech/image 23.png';
-import tech2 from '../assets/Image/tech/image 29.png';
-import tech3 from '../assets/Image/tech/6.png';
-import tech4 from '../assets/Image/tech/8.png';
-import tech5 from '../assets/Image/tech/image 34.png';
-import tech6 from '../assets/Image/tech/image 32.png';
-import tech7 from '../assets/Image/tech/image 33.png';
-import tech8 from '../assets/Image/tech/image 86.png';
-import tech9 from '../assets/Image/tech/image 85.png';
+import { getProducts } from '../services/productService';
+import { useCart } from './CartContext';
 
-// Cloth images for "You may also like"
-import cloth1 from '../assets/Layout/alibaba/Image/cloth/image 24.png';
-import cloth2 from '../assets/Layout/alibaba/Image/cloth/image 26.png';
-import cloth3 from '../assets/Layout/alibaba/Image/cloth/image 30.png';
-import cloth4 from '../assets/Layout/alibaba/Image/cloth/Bitmap.png';
-import cloth5 from '../assets/Layout/alibaba/Image/cloth/Bitmap2.png';
+const formatPrice = (price) => Number(price || 0).toFixed(2);
 
-const ProductList = ({ onNavigate }) => {
+const ProductList = ({ onNavigate, initialSearchQuery = '' }) => {
+  const { addToCart } = useCart();
   const [viewType, setViewType] = useState('list'); // 'list' or 'grid'
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [apiProducts, setApiProducts] = useState([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [productError, setProductError] = useState('');
+  const [currentPageNumber, setCurrentPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState({
-    Samsung: true,
-    Apple: true,
-    Pocco: true,
+    Samsung: false,
+    Apple: false,
+    Pocco: false,
     Huawei: false,
     Lenovo: false,
   });
   const [selectedFeatures, setSelectedFeatures] = useState({
-    Metallic: true,
+    Metallic: false,
     'Plastic cover': false,
     '8GB Ram': false,
     'Super power': false,
@@ -53,8 +48,8 @@ const ProductList = ({ onNavigate }) => {
   });
   const [selectedRatings, setSelectedRatings] = useState({
     '5 star': false,
-    '4 star': true,
-    '3 star': true,
+    '4 star': false,
+    '3 star': false,
     '2 star': false,
   });
 
@@ -91,188 +86,120 @@ const ProductList = ({ onNavigate }) => {
   const priceMinPercent = ((priceMin - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100;
   const priceMaxPercent = ((priceMax - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100;
 
-  const products = [
-    {
-      id: 1,
-      img: tech9,
-      title: 'Canon Cmera EOS 2000, Black 10x zoom',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
-    },
-    {
-      id: 2,
-      img: tech6,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 3,
-      img: tech1,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 4,
-      img: tech5,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 5,
-      img: tech7,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 6,
-      img: tech9,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 7,
-      img: tech8,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 8,
-      img: tech3,
-      title: 'Canon Cmera EOS 2000, Black 10x zoom',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 9,
-      img: tech4,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 10,
-      img: tech2,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 11,
-      img: tech5,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 12,
-      img: tech7,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 13,
-      img: tech9,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 14,
-      img: tech6,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-    {
-      id: 15,
-      img: tech1,
-      title: 'GoPro HERO6 4K Action Camera - Black',
-      price: '99.50',
-      oldPrice: '1128.00',
-      rating: 4.5,
-      ratingNum: 7.5,
-      orders: 154,
-      shipping: 'Free Shipping',
-      desc: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit',
-    },
-  ];
+  useEffect(() => {
+    setSearchQuery(initialSearchQuery);
+  }, [initialSearchQuery]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProducts = async () => {
+      try {
+        setIsLoadingProducts(true);
+        setProductError('');
+        const data = await getProducts({ page: 1, pageSize: 120 });
+
+        if (!isMounted) return;
+        setApiProducts(data.items);
+        setTotalItems(data.totalItems);
+      } catch (error) {
+        if (!isMounted) return;
+        console.error('Failed to load products:', error);
+        setProductError('Showing local products while the API is unavailable.');
+      } finally {
+        if (isMounted) {
+          setIsLoadingProducts(false);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const allFilteredProducts = useMemo(() => {
+    let filtered = [...apiProducts];
+
+    // Search Query Filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(p =>
+        p.title?.toLowerCase().includes(query) ||
+        p.description?.toLowerCase().includes(query)
+      );
+    }
+
+    // Brand Filter
+    const activeBrands = Object.keys(selectedBrands).filter(b => selectedBrands[b]);
+    if (activeBrands.length > 0) {
+      filtered = filtered.filter(p => {
+        const brandMatch = activeBrands.some(b =>
+          p.title?.toLowerCase().includes(b.toLowerCase()) ||
+          p.specifications?.some(s => s.value?.toLowerCase().includes(b.toLowerCase()))
+        );
+        return brandMatch;
+      });
+    }
+
+    // Features Filter
+    const activeFeatures = Object.keys(selectedFeatures).filter(f => selectedFeatures[f]);
+    if (activeFeatures.length > 0) {
+      filtered = filtered.filter(p => {
+        const featMatch = activeFeatures.some(f =>
+          p.title?.toLowerCase().includes(f.toLowerCase()) ||
+          p.description?.toLowerCase().includes(f.toLowerCase()) ||
+          p.specifications?.some(s => s.value?.toLowerCase().includes(f.toLowerCase()) || s.name?.toLowerCase().includes(f.toLowerCase()))
+        );
+        return featMatch;
+      });
+    }
+
+    // Ratings Filter
+    const minRating = Object.keys(selectedRatings)
+      .filter(r => selectedRatings[r])
+      .map(r => parseInt(r))
+      .sort((a, b) => a - b)[0]; // Get the lowest selected rating as threshold
+
+    if (minRating) {
+      filtered = filtered.filter(p => p.rating >= minRating);
+    }
+
+    // Price Range Filter
+    filtered = filtered.filter(p => p.price >= priceMin && p.price <= priceMax);
+
+    // Verified Filter
+    if (verifiedOnly) {
+      filtered = filtered.filter(p => p.supplier?.isVerified);
+    }
+
+    return filtered.map((product) => ({
+      ...product,
+      img: product.imageUrl,
+      price: formatPrice(product.price),
+      oldPrice: product.oldPrice ? formatPrice(product.oldPrice) : '',
+      ratingNum: product.rating.toFixed(1),
+      orders: product.totalOrders,
+      shipping: product.freeShipping ? 'Free Shipping' : 'Shipping calculated',
+      desc: product.description,
+    }));
+  }, [apiProducts, searchQuery, selectedBrands, selectedFeatures, selectedRatings, priceMin, priceMax, verifiedOnly]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPageNumber(1);
+  }, [searchQuery, selectedBrands, selectedFeatures, selectedRatings, priceMin, priceMax, verifiedOnly]);
+
+  const products = useMemo(() => {
+    const startIndex = (currentPageNumber - 1) * pageSize;
+    return allFilteredProducts.slice(startIndex, startIndex + pageSize);
+  }, [allFilteredProducts, currentPageNumber, pageSize]);
+
+  const handleProductClick = (product) => {
+    onNavigate('product-details', { productId: product.id });
+  };
 
   // Dynamic filter state helpers
   const handleBrandChange = (brand) => {
@@ -309,13 +236,7 @@ const ProductList = ({ onNavigate }) => {
     }
   };
 
-  const youMayLike = [
-    { img: cloth3, price: '10.30', title: 'Solid Backpack blue jeans large size' },
-    { img: cloth5, price: '10.30', title: 'T-shirts with multiple colors, for men' },
-    { img: tech7, price: '10.30', title: 'T-shirts with multiple colors, for men' },
-    { img: cloth4, price: '10.30', title: 'Jeans bag for travel for men' },
-    { img: cloth1, price: '12.50', title: 'Brown winter coat medium size' },
-  ];
+  const youMayLike = products.slice(0, 5);
 
   return (
     <main className="bg-bg-main py-0 md:py-6 text-brand-dark">
@@ -336,9 +257,15 @@ const ProductList = ({ onNavigate }) => {
           </div>
 
           {/* Search bar */}
-          <div className="flex border border-gray-300 rounded-md overflow-hidden mb-3 mx-3">
+          <div className="flex border border-gray-300 rounded-md overflow-hidden mb-3 mx-3 bg-white">
             <div className="pl-3 flex items-center text-gray-400"><Search size={16} /></div>
-            <input type="text" className="flex-1 px-2 py-2 outline-none text-brand-dark text-sm bg-white" placeholder="Search" />
+            <input
+              type="text"
+              className="flex-1 px-2 py-2 outline-none text-brand-dark text-sm bg-white"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
 
           {/* Category pills */}
@@ -594,7 +521,7 @@ const ProductList = ({ onNavigate }) => {
             {/* Desktop top filter bar (hidden on mobile) */}
             <div className="hidden md:flex bg-white border border-gray-200 rounded-md px-5 py-3 flex-wrap items-center justify-between gap-3 mb-4 shadow-sm select-none">
               <div className="flex items-center gap-2 text-sm">
-                <span>12,911 items in</span>
+                <span>{allFilteredProducts.length} items in</span>
                 <span className="font-bold">Mobile accessory</span>
               </div>
               <div className="flex items-center gap-5 flex-wrap">
@@ -621,6 +548,13 @@ const ProductList = ({ onNavigate }) => {
             </div>
 
             {/* Active Filters / Tags */}
+            {(isLoadingProducts || productError) && (
+              <div className="mb-3 px-3 md:px-0 text-sm text-brand-gray">
+                {isLoadingProducts ? 'Loading products...' : productError}
+              </div>
+            )}
+
+            {/* Active Filters / Tags */}
             {activeFilters.length > 0 && (
               <div className="flex flex-wrap gap-2 items-center mb-3 select-none px-3 md:px-0">
                 {activeFilters.map((filter) => (
@@ -643,7 +577,7 @@ const ProductList = ({ onNavigate }) => {
                 {products.map((product) => (
                   <div
                     key={product.id}
-                    onClick={() => onNavigate('product-details')}
+                    onClick={() => handleProductClick(product)}
                     className="bg-white border border-gray-200 rounded-md flex overflow-hidden p-3 md:p-5 shadow-sm hover:shadow-md hover:border-brand-blue transition-all group cursor-pointer"
                   >
                     {/* Image */}
@@ -663,7 +597,7 @@ const ProductList = ({ onNavigate }) => {
                       </div>
 
                       <h3 className="text-[15px] md:text-lg text-[#505050] md:font-semibold pr-0 md:pr-12 group-hover:text-brand-blue transition-colors leading-snug mb-1">
-                        Regular Fit Resort Shirt
+                        {product.title}
                       </h3>
 
                       {/* Price Details */}
@@ -695,9 +629,21 @@ const ProductList = ({ onNavigate }) => {
                         {product.desc}
                       </p>
 
-                      <span className="text-brand-blue font-bold text-sm hover:underline w-fit select-none mt-4 hidden md:inline" onClick={() => onNavigate('product-details')}>
-                        View details
-                      </span>
+                      <div className="flex items-center gap-4 mt-4 select-none">
+                        <span className="text-brand-blue font-bold text-sm hover:underline cursor-pointer hidden md:inline" onClick={() => handleProductClick(product)}>
+                          View details
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(product, 1);
+                            alert('Added to cart!');
+                          }}
+                          className="bg-brand-blue hover:bg-blue-700 text-white px-4 py-1.5 rounded-md text-xs font-bold transition-colors shadow-sm"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -708,7 +654,7 @@ const ProductList = ({ onNavigate }) => {
                 {products.map((product) => (
                   <div
                     key={product.id}
-                    onClick={() => onNavigate('product-details')}
+                    onClick={() => handleProductClick(product)}
                     className="bg-white border border-gray-200 rounded-md p-4 flex flex-col justify-between shadow-sm hover:shadow-md hover:border-brand-blue transition-all group cursor-pointer"
                   >
                     {/* Image */}
@@ -724,11 +670,24 @@ const ProductList = ({ onNavigate }) => {
                       {/* Price Grid */}
                       <div className="flex items-baseline justify-between select-none mb-2 border-t border-gray-100 pt-3">
                         <div className="flex items-baseline gap-1.5">
-                          <span className="text-base font-bold text-brand-dark">$99.50</span>
-                          <span className="text-xs text-gray-400 line-through">$1128.00</span>
+                          <span className="text-base font-bold text-brand-dark">${product.price}</span>
+                          {product.oldPrice && <span className="text-xs text-gray-400 line-through">${product.oldPrice}</span>}
                         </div>
-                        <div className="w-8 h-8 border border-gray-200 rounded-md flex items-center justify-center cursor-pointer hover:bg-red-50 hover:text-[#eb001b] hover:border-red-200 transition-colors shadow-sm bg-white">
-                          <Heart size={15} className="text-brand-blue" />
+                        <div className="flex gap-2">
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToCart(product, 1);
+                              alert('Added to cart!');
+                            }}
+                            className="w-8 h-8 border border-gray-200 rounded-md flex items-center justify-center cursor-pointer hover:bg-blue-50 text-brand-blue hover:border-brand-blue transition-colors shadow-sm bg-white"
+                            title="Add to Cart"
+                          >
+                            <ShoppingCart size={15} />
+                          </div>
+                          <div className="w-8 h-8 border border-gray-200 rounded-md flex items-center justify-center cursor-pointer hover:bg-red-50 hover:text-[#eb001b] hover:border-red-200 transition-colors shadow-sm bg-white">
+                            <Heart size={15} className="text-brand-blue" />
+                          </div>
                         </div>
                       </div>
 
@@ -739,11 +698,11 @@ const ProductList = ({ onNavigate }) => {
                             <Star
                               key={sIdx}
                               size={12}
-                              className={sIdx < 4 ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'}
+                              className={sIdx < Math.floor(product.rating) ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'}
                             />
                           ))}
                         </div>
-                        <span className="text-[#ff9017] font-bold">7.5</span>
+                        <span className="text-[#ff9017] font-bold">{product.ratingNum}</span>
                       </div>
 
                       {/* Title */}
@@ -759,26 +718,38 @@ const ProductList = ({ onNavigate }) => {
             {/* Pagination Controls */}
             <div className="hidden md:flex flex-wrap items-center justify-center md:justify-end gap-3 border-t border-gray-200 mt-8 pt-5 select-none">
               <div>
-                <select className="border border-gray-300 rounded-md px-3 py-1.5 text-sm outline-none bg-white cursor-pointer hover:border-brand-blue transition-colors text-brand-dark font-medium">
-                  <option>Show 10</option>
-                  <option>Show 20</option>
-                  <option>Show 50</option>
+                <select
+                  value={pageSize}
+                  onChange={(e) => setPageSize(Number(e.target.value))}
+                  className="border border-gray-300 rounded-md px-3 py-1.5 text-sm outline-none bg-white cursor-pointer hover:border-brand-blue transition-colors text-brand-dark font-medium"
+                >
+                  <option value={10}>Show 10</option>
+                  <option value={20}>Show 20</option>
+                  <option value={50}>Show 50</option>
                 </select>
               </div>
               <div className="flex border border-gray-300 rounded-md overflow-hidden bg-white text-sm font-semibold shadow-sm">
-                <button className="p-2.5 hover:bg-gray-50 border-r border-gray-300 text-brand-dark flex items-center justify-center">
+                <button
+                  disabled={currentPageNumber === 1}
+                  onClick={() => setCurrentPageNumber(prev => Math.max(1, prev - 1))}
+                  className="p-2.5 hover:bg-gray-50 border-r border-gray-300 text-brand-dark flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <ChevronLeft size={16} />
                 </button>
-                <button className="px-4 py-2 bg-[#e5f1ff] text-brand-blue border-r border-gray-300 flex items-center justify-center">
-                  1
-                </button>
-                <button className="px-4 py-2 hover:bg-gray-50 border-r border-gray-300 text-brand-dark flex items-center justify-center">
-                  2
-                </button>
-                <button className="px-4 py-2 hover:bg-gray-50 border-r border-gray-300 text-brand-dark flex items-center justify-center">
-                  3
-                </button>
-                <button className="p-2.5 hover:bg-gray-50 text-brand-dark flex items-center justify-center">
+                {Array.from({ length: Math.ceil(allFilteredProducts.length / pageSize) }).map((_, idx) => (
+                  <button
+                    key={idx + 1}
+                    onClick={() => setCurrentPageNumber(idx + 1)}
+                    className={`px-4 py-2 border-r border-gray-300 flex items-center justify-center transition-colors ${currentPageNumber === idx + 1 ? 'bg-[#e5f1ff] text-brand-blue' : 'hover:bg-gray-50 text-brand-dark'}`}
+                  >
+                    {idx + 1}
+                  </button>
+                )).slice(0, 5) /* Show max 5 pages for now */}
+                <button
+                  disabled={currentPageNumber === Math.ceil(allFilteredProducts.length / pageSize)}
+                  onClick={() => setCurrentPageNumber(prev => Math.min(Math.ceil(allFilteredProducts.length / pageSize), prev + 1))}
+                  className="p-2.5 hover:bg-gray-50 text-brand-dark flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <ChevronRight size={16} />
                 </button>
               </div>
@@ -794,7 +765,7 @@ const ProductList = ({ onNavigate }) => {
               <div
                 key={idx}
                 className="bg-white border border-gray-200 rounded-md p-3 hover:shadow-md transition-shadow cursor-pointer flex-shrink-0 w-[140px] md:w-[200px]"
-                onClick={() => onNavigate('product-details')}
+                onClick={() => handleProductClick(item)}
               >
                 <div className="h-28 md:h-36 w-full flex items-center justify-center mb-3">
                   <img src={item.img} alt={item.title} className="max-w-full max-h-full object-contain" />

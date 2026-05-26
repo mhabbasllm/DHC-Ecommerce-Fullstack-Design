@@ -17,20 +17,24 @@ import {
   LogOut
 } from 'lucide-react';
 import { useAuth } from '../Auth/AuthContext';
+import { useCart } from '../CartContext';
 import logo from '../../assets/Layout/Brand/logo-colored.png';
 import flagDE from '../../assets/Layout1/Image/flags/DE@2x.png';
 
 const Header = ({ onNavigate, currentPage }) => {
+  const { cartCount } = useCart();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const hasOwnMobileHeader = ['products', 'product-details', 'cart'].includes(currentPage);
   const { isAuthenticated, user, logout } = useAuth();
+
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogoClick = () => {
     if (onNavigate) onNavigate('home');
   };
 
-  const handleProductsClick = () => {
-    if (onNavigate) onNavigate('products');
+  const handleProductsClick = (query = searchQuery) => {
+    if (onNavigate) onNavigate('products', { searchQuery: query });
   };
 
   const handleDrawerNav = (page) => {
@@ -58,17 +62,19 @@ const Header = ({ onNavigate, currentPage }) => {
                 type="text"
                 className="flex-1 px-4 py-2 border-2 border-brand-blue rounded-l-md outline-none text-brand-dark"
                 placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleProductsClick()}
               />
               <div
                 className="px-4 py-2 border-2 border-brand-blue border-l-0 bg-white cursor-pointer flex items-center gap-1 text-brand-gray select-none hover:bg-gray-50 transition-colors"
-                onClick={handleProductsClick}
+                onClick={() => handleProductsClick()}
               >
                 All category <ChevronDown size={16} />
               </div>
               <button
                 className="bg-brand-blue text-white px-6 py-2 rounded-r-md font-semibold hover:bg-blue-700 transition-colors"
-                onClick={handleProductsClick}
+                onClick={() => handleProductsClick()}
               >
                 Search
               </button>
@@ -90,7 +96,20 @@ const Header = ({ onNavigate, currentPage }) => {
                 : { icon: <User size={20} />, label: 'Profile', onClick: () => onNavigate('login') },
               { icon: <MessageSquare size={20} />, label: 'Message', onClick: () => onNavigate('home') },
               { icon: <Heart size={20} />, label: 'Orders', onClick: () => onNavigate('products') },
-              { icon: <ShoppingCart size={20} />, label: 'My cart', onClick: () => onNavigate('cart') },
+              {
+                icon: (
+                  <div className="relative">
+                    <ShoppingCart size={20} />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                        {cartCount}
+                      </span>
+                    )}
+                  </div>
+                ),
+                label: 'My cart',
+                onClick: () => onNavigate('cart')
+              },
             ].map((item, idx) => (
               <div
                 key={idx}
@@ -153,11 +172,18 @@ const Header = ({ onNavigate, currentPage }) => {
             </div>
 
             <div className="flex items-center gap-4">
-              <ShoppingCart
-                size={22}
-                className="text-brand-dark cursor-pointer hover:text-brand-blue transition-colors"
-                onClick={() => onNavigate('cart')}
-              />
+              <div className="relative">
+                <ShoppingCart
+                  size={22}
+                  className="text-brand-dark cursor-pointer hover:text-brand-blue transition-colors"
+                  onClick={() => onNavigate('cart')}
+                />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-bold">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
               {isAuthenticated && user ? (
                 <div
                   className="w-7 h-7 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold text-xs cursor-pointer hover:bg-blue-600 transition-colors"

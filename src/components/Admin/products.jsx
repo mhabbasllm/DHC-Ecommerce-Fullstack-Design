@@ -1,15 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getProducts } from '../../services/productService';
+
+const formatPrice = (price) => `$${Number(price || 0).toFixed(2)}`;
 
 const AdminProducts = () => {
-  const [productsList, setProductsList] = useState([
-    { id: '1', name: 'MacBook Pro M2', price: '$1,299.00', stock: 45, category: 'Tech' },
-    { id: '2', name: 'AirPods Pro', price: '$249.00', stock: 120, category: 'Tech' },
-    { id: '3', name: 'Smart Watch Series 8', price: '$399.00', stock: 65, category: 'Tech' },
-    { id: '4', name: 'T-shirts with multiple colors', price: '$10.30', stock: 200, category: 'Clothing' },
-    { id: '5', name: 'Canon Camera EOS 2000', price: '$99.50', stock: 12, category: 'Tech' },
-  ]);
+  const [productsList, setProductsList] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [productError, setProductError] = useState('');
   const [editingProduct, setEditingProduct] = useState(null);
   const [isProductFormOpen, setIsProductFormOpen] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProducts = async () => {
+      try {
+        setIsLoadingProducts(true);
+        setProductError('');
+        const data = await getProducts({ page: 1, pageSize: 50 });
+
+        if (!isMounted) return;
+
+        if (data.items.length) {
+          setProductsList(data.items.map((product) => ({
+            id: product.id,
+            name: product.title,
+            price: formatPrice(product.price),
+            stock: product.stockQuantity,
+            category: product.category || 'Uncategorized',
+          })));
+        }
+      } catch (error) {
+        if (!isMounted) return;
+        console.error('Failed to load admin products:', error);
+        setProductError('Showing local products while the API is unavailable.');
+      } finally {
+        if (isMounted) {
+          setIsLoadingProducts(false);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleEditProduct = (product) => {
     setEditingProduct(product);
@@ -49,7 +86,7 @@ const AdminProducts = () => {
       <div className="flex justify-between items-center mb-6">
          <div>
            <h2 className="text-xl font-bold text-brand-dark">Products Management</h2>
-           <p className="text-sm text-gray-500">View, edit and add new products to your store.</p>
+           <p className="text-sm text-gray-500">{isLoadingProducts ? 'Loading products from API...' : productError || 'View, edit and add new products to your store.'}</p>
          </div>
          <button 
            onClick={() => { setEditingProduct(null); setIsProductFormOpen(true); }}

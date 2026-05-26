@@ -9,22 +9,25 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Admin from './components/Admin/index.jsx';
 import { AuthProvider } from './components/Auth/AuthContext';
+import { CartProvider } from './components/CartContext';
 import './App.css';
 
 const AppContent = ({ currentPage, setCurrentPage, navigateTo }) => {
+  const pageName = typeof currentPage === 'string' ? currentPage : currentPage?.name;
+
   return (
-    <div className={`min-h-screen ${currentPage === 'admin' ? 'bg-[#f1f5f9]' : 'bg-bg-main'} flex flex-col justify-between`}>
+    <div className={`min-h-screen ${pageName === 'admin' ? 'bg-[#f1f5f9]' : 'bg-bg-main'} flex flex-col justify-between`}>
       <div>
-        {currentPage !== 'admin' && <Header onNavigate={navigateTo} currentPage={currentPage} />}
-        {currentPage === 'home' && <MainBody onNavigate={navigateTo} />}
-        {currentPage === 'products' && <ProductList onNavigate={navigateTo} />}
-        {currentPage === 'product-details' && <ProductDetails onNavigate={navigateTo} />}
-        {currentPage === 'cart' && <Cart onNavigate={navigateTo} />}
-        {currentPage === 'login' && <Login onNavigate={navigateTo} />}
-        {currentPage === 'register' && <Register onNavigate={navigateTo} />}
-        {currentPage === 'admin' && <Admin onNavigate={navigateTo} />}
+        {pageName !== 'admin' && <Header onNavigate={navigateTo} currentPage={pageName} />}
+        {pageName === 'home' && <MainBody onNavigate={navigateTo} />}
+        {pageName === 'products' && <ProductList onNavigate={navigateTo} initialSearchQuery={currentPage?.searchQuery} />}
+        {pageName === 'product-details' && <ProductDetails onNavigate={navigateTo} productId={currentPage.productId} />}
+        {pageName === 'cart' && <Cart onNavigate={navigateTo} />}
+        {pageName === 'login' && <Login onNavigate={navigateTo} />}
+        {pageName === 'register' && <Register onNavigate={navigateTo} />}
+        {pageName === 'admin' && <Admin onNavigate={navigateTo} />}
       </div>
-      {currentPage !== 'admin' && <Footer />}
+      {pageName !== 'admin' && <Footer />}
     </div>
   );
 };
@@ -33,7 +36,9 @@ const App = () => {
   const [currentPage, setCurrentPage] = useState(() => {
     if (typeof window !== 'undefined') {
       const path = window.location.pathname;
+      const productDetailMatch = path.match(/^\/product-details\/([^/]+)$/);
       if (path === '/products') return 'products';
+      if (productDetailMatch) return { name: 'product-details', productId: productDetailMatch[1] };
       if (path === '/product-details') return 'product-details';
       if (path === '/cart') return 'cart';
       if (path === '/login') return 'login';
@@ -44,18 +49,31 @@ const App = () => {
     return 'home';
   });
 
-  const navigateTo = (page) => {
-    setCurrentPage(page);
+  const getPageName = (page) => typeof page === 'string' ? page : page?.name;
+
+  const navigateTo = (page, options = {}) => {
+    const pageName = getPageName(page);
+    const productId = options.productId || page?.productId;
+    const searchQuery = options.searchQuery || page?.searchQuery;
+
+    let nextPage = pageName;
+    if (pageName === 'product-details' && productId) {
+      nextPage = { name: 'product-details', productId };
+    } else if (pageName === 'products' && searchQuery) {
+      nextPage = { name: 'products', searchQuery };
+    }
+
+    setCurrentPage(nextPage);
     let newPath = '/';
-    if (page === 'products') newPath = '/products';
-    else if (page === 'product-details') newPath = '/product-details';
-    else if (page === 'cart') newPath = '/cart';
-    else if (page === 'login') newPath = '/login';
-    else if (page === 'register') newPath = '/register';
-    else if (page === 'admin') newPath = '/admin';
-    
+    if (pageName === 'products') newPath = '/products';
+    else if (pageName === 'product-details') newPath = productId ? `/product-details/${productId}` : '/product-details';
+    else if (pageName === 'cart') newPath = '/cart';
+    else if (pageName === 'login') newPath = '/login';
+    else if (pageName === 'register') newPath = '/register';
+    else if (pageName === 'admin') newPath = '/admin';
+
     if (window.location.pathname !== newPath) {
-      window.history.pushState({ page }, '', newPath);
+      window.history.pushState({ page: nextPage }, '', newPath);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -66,7 +84,9 @@ const App = () => {
         setCurrentPage(event.state.page);
       } else {
         const path = window.location.pathname;
+        const productDetailMatch = path.match(/^\/product-details\/([^/]+)$/);
         if (path === '/products') setCurrentPage('products');
+        else if (productDetailMatch) setCurrentPage({ name: 'product-details', productId: productDetailMatch[1] });
         else if (path === '/product-details') setCurrentPage('product-details');
         else if (path === '/cart') setCurrentPage('cart');
         else if (path === '/login') setCurrentPage('login');
@@ -81,9 +101,11 @@ const App = () => {
   }, []);
 
   return (
-    <AuthProvider>
-      <AppContent currentPage={currentPage} setCurrentPage={setCurrentPage} navigateTo={navigateTo} />
-    </AuthProvider>
+    <CartProvider>
+      <AuthProvider>
+        <AppContent currentPage={currentPage} setCurrentPage={setCurrentPage} navigateTo={navigateTo} />
+      </AuthProvider>
+    </CartProvider>
   );
 };
 

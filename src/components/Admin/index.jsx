@@ -44,14 +44,7 @@ const AdminDashboard = ({ onNavigate }) => {
     { title: 'Active Users', value: '1,204', increase: '+4.3%', icon: <Users size={20} className="text-orange-500" /> },
     { title: 'Total Products', value: '342', increase: '+2.1%', icon: <Package size={20} className="text-purple-500" /> },
   ];
-
-  const recentOrders = [
-    { id: '#ORD-001', customer: 'John Doe', product: 'MacBook Pro M2', date: 'Oct 24, 2026', amount: '$1,299.00', status: 'Delivered' },
-    { id: '#ORD-002', customer: 'Jane Smith', product: 'AirPods Pro', date: 'Oct 23, 2026', amount: '$249.00', status: 'Processing' },
-    { id: '#ORD-003', customer: 'Michael Johnson', product: 'Smart Watch Series 8', date: 'Oct 21, 2026', amount: '$399.00', status: 'Shipped' },
-    { id: '#ORD-004', customer: 'Emily Davis', product: 'Mechanical Keyboard', date: 'Oct 20, 2026', amount: '$149.00', status: 'Delivered' },
-    { id: '#ORD-005', customer: 'Chris Wilson', product: '4K Monitor 27"', date: 'Oct 19, 2026', amount: '$450.00', status: 'Pending' },
-  ];
+  const recentOrders = [];
 
   const getStatusColor = (status) => {
     switch(status) {

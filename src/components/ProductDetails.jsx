@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Heart,
   Star,
@@ -15,69 +15,132 @@ import {
   ShoppingCart,
   User,
   ArrowLeft,
-  ArrowRight
+  ArrowRight,
+  Minus,
+  Plus
 } from 'lucide-react';
 
-// Import clothing assets
-import cloth1 from '../assets/Layout/alibaba/Image/cloth/Bitmap.png';
-import cloth2 from '../assets/Layout/alibaba/Image/cloth/2 1.png';
-import cloth3 from '../assets/Layout/alibaba/Image/cloth/Bitmap2.png';
-import cloth4 from '../assets/Layout/alibaba/Image/cloth/image 24.png';
-import cloth5 from '../assets/Layout/alibaba/Image/cloth/image 26.png';
-import cloth6 from '../assets/Layout/alibaba/Image/cloth/image 30.png';
+import { getProduct, getProducts } from '../services/productService';
+import { useCart } from './CartContext';
 
-// Import tech assets for sidebar and related products
-import tech1 from '../assets/Image/tech/image 23.png';
-import tech2 from '../assets/Image/tech/image 29.png';
-import tech3 from '../assets/Image/tech/6.png';
-import tech4 from '../assets/Image/tech/8.png';
-import tech5 from '../assets/Image/tech/image 34.png';
-import tech6 from '../assets/Image/tech/image 32.png';
-import tech7 from '../assets/Image/tech/image 33.png';
-import tech8 from '../assets/Image/tech/image 86.png';
-import tech9 from '../assets/Image/tech/image 85.png';
+const formatPrice = (price) => Number(price || 0).toFixed(2);
 
-const ProductDetails = ({ onNavigate }) => {
-  const [activeImage, setActiveImage] = useState(cloth1);
+const ProductDetails = ({ onNavigate, productId }) => {
+  const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [activeImage, setActiveImage] = useState('');
   const [activeTab, setActiveTab] = useState('description');
+  const [product, setProduct] = useState(null);
+  const [relatedApiProducts, setRelatedApiProducts] = useState([]);
+  const [isLoadingProduct, setIsLoadingProduct] = useState(true);
+  const [productError, setProductError] = useState('');
 
-  const thumbnails = [cloth1, cloth2, cloth3, cloth4, cloth5, cloth6];
+  const displayProduct = product;
+  const thumbnails = displayProduct?.thumbnailUrls?.length
+    ? displayProduct.thumbnailUrls
+    : displayProduct?.imageUrl ? [displayProduct.imageUrl] : [];
 
-  const specs = [
-    { name: 'Model', value: '#8786867' },
-    { name: 'Style', value: 'Classic style' },
-    { name: 'Certificate', value: 'ISO-898921212' },
-    { name: 'Size', value: '34mm x 450mm x 19mm' },
-    { name: 'Memory', value: '36GB RAM' },
-  ];
+  const specs = displayProduct?.specifications || [];
 
   const features = [
-    'Some great feature name here',
-    'Lorem ipsum dolor sit amet, consectetur',
-    'Duis aute irure dolor in reprehenderit',
-    'Some great feature name here',
+    displayProduct?.freeShipping ? 'Free shipping is available' : 'Shipping options are available from supplier',
+    displayProduct?.isNegotiable ? 'Price is negotiable for bulk orders' : 'Fixed price listing',
+    displayProduct?.warranty,
+    `${displayProduct?.stockQuantity || 0} units in stock`,
   ];
 
-  const youMayLike = [
-    { id: 1, img: cloth5, title: 'Men Blazers Sets Elegant Formal', price: '$7.00 - $99.50' },
-    { id: 2, img: cloth3, title: 'Men Shirt Sleeve Polo Contrast', price: '$7.00 - $99.50' },
-    { id: 3, img: tech7, title: 'Apple Watch Series Space Gray', price: '$7.00 - $99.50' },
-    { id: 4, img: cloth4, title: 'Basketball Crew Socks Long Stuff', price: '$7.00 - $99.50' },
-    { id: 5, img: cloth6, title: "New Summer Men's castrol T-Shirts", price: '$7.00 - $99.50' },
-  ];
+  const relatedProducts = useMemo(() => (
+    relatedApiProducts.map((item) => ({
+      id: item.id,
+      img: item.imageUrl,
+      title: item.title,
+      price: `${formatPrice(item.price)}`,
+    }))
+  ), [relatedApiProducts]);
 
-  const relatedProducts = [
-    { id: 1, img: cloth1, title: 'Xiaomi Redmi 8 Original', price: '$32.00-$40.00' },
-    { id: 2, img: tech7, title: 'Xiaomi Redmi 8 Original', price: '$32.00-$40.00' },
-    { id: 3, img: tech8, title: 'Xiaomi Redmi 8 Original', price: '$32.00-$40.00' },
-    { id: 4, img: cloth3, title: 'Xiaomi Redmi 8 Original', price: '$32.00-$40.00' },
-    { id: 5, img: tech4, title: 'Xiaomi Redmi 8 Original', price: '$32.00-$40.00' },
-    { id: 6, img: cloth6, title: 'Xiaomi Redmi 8 Original', price: '$32.00-$40.00' },
-  ];
+  const youMayLike = relatedProducts.slice(0, 5);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProduct = async () => {
+      try {
+        setIsLoadingProduct(true);
+        setProductError('');
+
+        const [productData, relatedData] = await Promise.all([
+          productId ? getProduct(productId) : getProducts({ page: 1, pageSize: 1 }).then((data) => data.items[0] || null),
+          getProducts({ page: 1, pageSize: 6 }),
+        ]);
+
+        if (!isMounted) return;
+
+        if (productData) {
+          setProduct(productData);
+          setActiveImage(productData.thumbnailUrls?.[0] || productData.imageUrl || '');
+        }
+
+        setRelatedApiProducts((relatedData.items || []).filter((item) => item.id !== productData?.id));
+      } catch (error) {
+        if (!isMounted) return;
+        console.error('Failed to load product details:', error);
+        setProductError('Product details are unavailable because the API request failed.');
+      } finally {
+        if (isMounted) {
+          setIsLoadingProduct(false);
+        }
+      }
+    };
+
+    loadProduct();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [productId]);
 
   const activeIdx = thumbnails.indexOf(activeImage);
   const goNext = () => setActiveImage(thumbnails[(activeIdx + 1) % thumbnails.length]);
   const goPrev = () => setActiveImage(thumbnails[(activeIdx - 1 + thumbnails.length) % thumbnails.length]);
+
+  if (isLoadingProduct) {
+    return (
+      <main className="bg-[#f7f8fa] py-10 md:py-20 text-center flex flex-col items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue mb-4"></div>
+        <p className="text-brand-gray font-medium">Loading product details...</p>
+      </main>
+    );
+  }
+
+  if (productError || !displayProduct) {
+    return (
+      <main className="bg-[#f7f8fa] py-10 md:py-20 text-center px-4">
+        <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <ShieldAlert size={40} className="text-red-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-brand-dark mb-3">Product Not Available</h2>
+          <p className="text-brand-gray mb-8 leading-relaxed">
+            {productError || "We couldn't find the product details you requested. It may have been removed or is temporarily unavailable."}
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => onNavigate('products')}
+              className="bg-brand-blue hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-md"
+            >
+              Explore Products
+            </button>
+            <button
+              onClick={() => onNavigate('home')}
+              className="text-brand-blue font-semibold hover:underline"
+            >
+              Go to Homepage
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="bg-[#f7f8fa] py-0 md:py-6 text-brand-dark font-sans">
@@ -110,7 +173,7 @@ const ProductDetails = ({ onNavigate }) => {
 
             <div className="relative mb-4">
               <div className="h-[300px] flex items-center justify-center p-4 overflow-hidden select-none">
-                <img src={activeImage} alt="Product" className="max-h-full max-w-full object-contain" />
+                <img src={activeImage || displayProduct.imageUrl} alt={displayProduct.title} className="max-h-full max-w-full object-contain" />
               </div>
               <div className="absolute bottom-4 right-4 bg-black/30 rounded-full px-2.5 py-1.5 flex items-center gap-4 shadow-sm z-10 backdrop-blur-sm">
                 <ArrowLeft size={16} className="text-white cursor-pointer" onClick={(e) => { e.stopPropagation(); goPrev(); }} />
@@ -131,17 +194,25 @@ const ProductDetails = ({ onNavigate }) => {
               </div>
 
               {/* Product title */}
-              <h1 className="text-base font-bold text-brand-dark mb-1">Product name goes here</h1>
+              <h1 className="text-base font-bold text-brand-dark mb-1">{displayProduct.title}</h1>
 
               {/* Price */}
               <div className="flex items-baseline gap-2 mb-3">
-                <span className="text-[#eb001b] font-bold text-xl">$129.95</span>
+                <span className="text-[#eb001b] font-bold text-xl">${formatPrice(displayProduct.price)}</span>
                 <span className="text-xs text-brand-gray">(50-100 pcs)</span>
               </div>
 
-              {/* Send inquiry + heart */}
+              {/* Add to Cart + heart */}
               <div className="flex gap-2 mb-4">
-                <button className="flex-1 bg-brand-blue hover:bg-blue-700 text-white rounded-lg py-3 font-semibold text-sm cursor-pointer transition-colors">Send inquiry</button>
+                <button
+                  onClick={() => {
+                    addToCart(displayProduct, quantity);
+                    alert('Added to cart!');
+                  }}
+                  className="flex-1 bg-brand-blue hover:bg-blue-700 text-white rounded-lg py-3 font-semibold text-sm cursor-pointer transition-colors"
+                >
+                  Add to Cart
+                </button>
                 <button className="w-12 h-12 border border-brand-blue rounded-lg flex items-center justify-center cursor-pointer hover:bg-blue-50 transition-colors bg-white">
                   <Heart size={20} className="text-brand-blue" />
                 </button>
@@ -149,14 +220,14 @@ const ProductDetails = ({ onNavigate }) => {
 
               {/* Attributes */}
               <div className="flex flex-col gap-2.5 text-sm mb-4">
-                {[{ k: 'Condition', v: 'Brand new' }, { k: 'Material', v: 'Plastic' }, { k: 'Category', v: 'Electronics, gadgets' }, { k: 'Item num', v: '23421' }].map((a, i) => (
+                {[{ k: 'Condition', v: 'Brand new' }, { k: 'Category', v: displayProduct.category || 'Marketplace item' }, { k: 'Warranty', v: displayProduct?.warranty }, { k: 'Stock', v: displayProduct.stockQuantity }].map((a, i) => (
                   <div key={i} className="flex"><span className="w-24 flex-shrink-0 text-brand-gray">{a.k}</span><span className="text-brand-dark">{a.v}</span></div>
                 ))}
               </div>
 
               {/* Description */}
               <div className="text-sm text-brand-gray leading-relaxed mb-2">
-                Info about edu item is an ideal companion for anyone engaged in learning. The drone provides precise and ...
+                {displayProduct.description}
               </div>
               <span className="text-brand-blue font-semibold text-sm cursor-pointer block">Read more</span>
             </div>
@@ -169,7 +240,7 @@ const ProductDetails = ({ onNavigate }) => {
               <div className="w-11 h-11 bg-[#c5f2f2] text-[#4ca2a2] rounded-md font-bold text-xl flex items-center justify-center flex-shrink-0">R</div>
               <div className="flex-1">
                 <span className="block text-[11px] text-brand-gray">Supplier</span>
-                <span className="text-sm font-semibold text-brand-dark">Guanjoi Trading LLC</span>
+                <span className="text-sm font-semibold text-brand-dark">{displayProduct.supplier?.companyName || 'Supplier'}</span>
               </div>
               <ChevronRight size={18} className="text-gray-400" />
             </div>
@@ -179,9 +250,9 @@ const ProductDetails = ({ onNavigate }) => {
 
             {/* Badges */}
             <div className="px-4 py-3.5 flex flex-wrap items-center gap-4 text-xs text-brand-gray select-none bg-white">
-              <span className="flex items-center gap-1"><img src="https://flagcdn.com/w20/de.png" alt="DE" className="w-5" /> Germany</span>
-              <span className="flex items-center gap-1"><ShieldCheck size={14} className="text-gray-400" /> Verified</span>
-              <span className="flex items-center gap-1"><Globe size={14} className="text-gray-400" /> Shipping</span>
+              <span className="flex items-center gap-1"><img src={`https://flagcdn.com/w20/${(displayProduct.supplier?.country || 'de').toLowerCase()}.png`} alt={displayProduct.supplier?.country || 'DE'} className="w-5" /> {displayProduct.supplier?.city || 'Supplier region'}</span>
+              <span className="flex items-center gap-1"><ShieldCheck size={14} className="text-gray-400" /> {displayProduct.supplier?.isVerified ? 'Verified' : 'Supplier'}</span>
+              <span className="flex items-center gap-1"><Globe size={14} className="text-gray-400" /> {displayProduct.supplier?.worldwideShipping ? 'Worldwide shipping' : 'Shipping'}</span>
             </div>
           </div>
 
@@ -190,7 +261,7 @@ const ProductDetails = ({ onNavigate }) => {
             <h2 className="text-base font-bold text-brand-dark mb-3 px-1">Similar products</h2>
             <div className="flex overflow-x-auto no-scrollbar gap-3 px-1 pb-2">
               {relatedProducts.map((p) => (
-                <div key={p.id} className="bg-white border border-gray-200 rounded-md p-3 flex-shrink-0 w-[150px] cursor-pointer" onClick={() => onNavigate('product-details')}>
+                <div key={p.id} className="bg-white border border-gray-200 rounded-md p-3 flex-shrink-0 w-[150px] cursor-pointer" onClick={() => onNavigate('product-details', { productId: p.id })}>
                   <img src={p.img} alt={p.title} className="w-full h-24 object-contain mb-2" />
                   <p className="font-bold text-sm mb-0.5">{p.price}</p>
                   <p className="text-brand-gray text-xs line-clamp-2">{p.title}</p>
@@ -199,6 +270,7 @@ const ProductDetails = ({ onNavigate }) => {
             </div>
           </div>
         </div>
+
 
         {/* ====== DESKTOP PRODUCT INFO BLOCK ====== */}
         <div className="bg-white border border-gray-200 rounded-md p-6 mb-6 shadow-sm hidden md:block">
@@ -209,7 +281,7 @@ const ProductDetails = ({ onNavigate }) => {
               {/* Big active preview */}
               <div className="h-[250px] md:h-[380px] w-full border border-gray-200 rounded-md flex items-center justify-center p-4 bg-white relative overflow-hidden select-none">
                 <img
-                  src={activeImage}
+                  src={activeImage || displayProduct.imageUrl}
                   alt="Active product view"
                   className="max-h-full max-w-full object-contain transition-all duration-300 hover:scale-105"
                 />
@@ -240,7 +312,7 @@ const ProductDetails = ({ onNavigate }) => {
 
               {/* Product Title */}
               <h1 className="text-lg md:text-xl font-bold leading-tight text-brand-dark mb-3">
-                Mens Long Sleeve T-shirt Cotton Base Layer Slim Muscle
+                {displayProduct.title}
               </h1>
 
               {/* Reviews & Orders */}
@@ -253,34 +325,34 @@ const ProductDetails = ({ onNavigate }) => {
                       className={sIdx < 4 ? 'text-[#ff9017] fill-[#ff9017]' : 'text-gray-300'}
                     />
                   ))}
-                  <span className="text-[#ff9017] font-bold ml-1.5">9.3</span>
+                  <span className="text-[#ff9017] font-bold ml-1.5">{displayProduct.rating.toFixed(1)}</span>
                 </div>
                 <span className="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
                 <div className="flex items-center gap-1.5 text-brand-gray">
                   <MessageSquare size={13} />
-                  <span>32 reviews</span>
+                  <span>{displayProduct.ratingCount} reviews</span>
                 </div>
                 <span className="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
                 <div className="flex items-center gap-1.5 text-brand-gray">
                   <ShoppingBag size={13} />
-                  <span>154 sold</span>
+                  <span>{displayProduct.totalOrders} sold</span>
                 </div>
               </div>
 
               {/* Pricing peach container */}
               <div className="bg-[#fff0df] rounded-md p-4 flex justify-between select-none mb-5">
                 <div className="flex-1">
-                  <span className="block text-[#eb001b] font-bold text-lg leading-tight">$98.00</span>
+                  <span className="block text-[#eb001b] font-bold text-lg leading-tight">${formatPrice(displayProduct.price)}</span>
                   <span className="text-[11px] text-brand-gray mt-1 block">50-100 pcs</span>
                 </div>
                 <div className="w-px bg-gray-200 self-stretch mx-3"></div>
                 <div className="flex-1">
-                  <span className="block text-brand-dark font-bold text-base leading-tight">$90.00</span>
+                  <span className="block text-brand-dark font-bold text-base leading-tight">${formatPrice(displayProduct.price * 0.92)}</span>
                   <span className="text-[11px] text-brand-gray mt-1 block">100-700 pcs</span>
                 </div>
                 <div className="w-px bg-gray-200 self-stretch mx-3"></div>
                 <div className="flex-1">
-                  <span className="block text-brand-dark font-bold text-base leading-tight">$78.00</span>
+                  <span className="block text-brand-dark font-bold text-base leading-tight">${formatPrice(displayProduct.price * 0.82)}</span>
                   <span className="text-[11px] text-brand-gray mt-1 block">700+ pcs</span>
                 </div>
               </div>
@@ -291,18 +363,18 @@ const ProductDetails = ({ onNavigate }) => {
 
                 <div className="flex items-baseline">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Price:</span>
-                  <span className="text-brand-dark">Negotiable</span>
+                  <span className="text-brand-dark">{displayProduct?.isNegotiable ? 'Negotiable' : 'Fixed price'}</span>
                 </div>
 
                 <hr className="border-gray-200 my-3" />
 
                 <div className="flex items-baseline">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Type:</span>
-                  <span className="text-brand-dark">Classic shoes</span>
+                  <span className="text-brand-dark">{displayProduct.category || 'Marketplace item'}</span>
                 </div>
                 <div className="flex items-baseline mt-3">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Material:</span>
-                  <span className="text-brand-dark">Plastic material</span>
+                  <span className="text-brand-dark">{specs[0]?.value || 'See specifications'}</span>
                 </div>
                 <div className="flex items-baseline mt-3">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Design:</span>
@@ -321,7 +393,7 @@ const ProductDetails = ({ onNavigate }) => {
                 </div>
                 <div className="flex items-baseline mt-3">
                   <span className="w-32 flex-shrink-0 text-brand-gray">Warranty:</span>
-                  <span className="text-brand-dark">2 years full warranty</span>
+                  <span className="text-brand-dark">{displayProduct?.warranty}</span>
                 </div>
 
                 <hr className="border-gray-200 mt-3" />
@@ -340,7 +412,7 @@ const ProductDetails = ({ onNavigate }) => {
                   </div>
                   <div>
                     <span className="block text-[11px] text-brand-gray">Supplier</span>
-                    <span className="text-sm font-semibold text-brand-dark">Guanjoi Trading LLC</span>
+                    <span className="text-sm font-semibold text-brand-dark">{displayProduct.supplier?.companyName || 'Supplier'}</span>
                   </div>
                 </div>
 
@@ -349,22 +421,46 @@ const ProductDetails = ({ onNavigate }) => {
                 {/* Contact properties */}
                 <div className="flex flex-col gap-2.5 text-xs text-brand-gray">
                   <div className="flex items-center gap-2">
-                    <img src="https://flagcdn.com/w20/de.png" alt="Germany" className="w-5 h-auto object-cover rounded-sm" />
-                    <span>Germany, Berlin</span>
+                    <img src={`https://flagcdn.com/w20/${(displayProduct.supplier?.country || 'de').toLowerCase()}.png`} alt={displayProduct.supplier?.country || 'DE'} className="w-5 h-auto object-cover rounded-sm" />
+                    <span>{displayProduct.supplier?.country || 'DE'}, {displayProduct.supplier?.city || 'Berlin'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <ShieldAlert size={14} className="text-[#a5b2c7]" />
-                    <span>Verified Seller</span>
+                    <span>{displayProduct.supplier?.isVerified ? 'Verified Seller' : 'Seller'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Globe size={14} className="text-[#a5b2c7]" />
-                    <span>Worldwide shipping</span>
+                    <span>{displayProduct.supplier?.worldwideShipping ? 'Worldwide shipping' : 'Shipping available'}</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <div className="flex items-center border border-gray-300 rounded-md">
+                    <button
+                      onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                      className="px-3 py-1 hover:bg-gray-100 border-r border-gray-300"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span className="px-4 py-1 font-medium">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(prev => prev + 1)}
+                      className="px-3 py-1 hover:bg-gray-100 border-l border-gray-300"
+                    >
+                      <Plus size={14} />
+                    </button>
                   </div>
                 </div>
 
                 {/* Primary Button Options */}
-                <button className="bg-brand-blue hover:bg-blue-700 text-white rounded-md py-2.5 font-semibold text-sm shadow-sm transition-colors text-center cursor-pointer">
-                  Send inquiry
+                <button
+                  onClick={() => {
+                    addToCart(displayProduct, quantity);
+                    alert('Added to cart!');
+                  }}
+                  className="bg-brand-blue hover:bg-blue-700 text-white rounded-md py-2.5 font-semibold text-sm shadow-sm transition-colors text-center cursor-pointer"
+                >
+                  Add to Cart
                 </button>
                 <button className="border border-gray-300 hover:border-brand-blue text-brand-blue rounded-md py-2.5 font-semibold text-sm shadow-sm transition-colors text-center cursor-pointer bg-white">
                   Seller's profile
@@ -407,15 +503,10 @@ const ProductDetails = ({ onNavigate }) => {
               <div className="flex flex-col gap-6">
                 <div className="text-brand-gray text-sm leading-relaxed flex flex-col gap-4">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                    commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                    nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                    labore et dolore magna aliqua. Ut enim ad minim veniam,
+                    {displayProduct.description}
                   </p>
                   <p>
-                    Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                    reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    This listing is loaded from the product catalog and includes live pricing, stock, supplier, warranty, and specification information where available.
                   </p>
                 </div>
 
@@ -460,14 +551,13 @@ const ProductDetails = ({ onNavigate }) => {
             </h3>
             <div className="flex flex-col gap-4">
               {youMayLike.map((item) => (
-                <div key={item.id} className="flex gap-3 items-center group cursor-pointer" onClick={() => onNavigate('product-details')}>
+                <div key={item.id} className="flex gap-3 items-center group cursor-pointer" onClick={() => onNavigate('product-details', { productId: item.id })}>
                   {/* Thumbnail box */}
                   <div className="w-[80px] h-[80px] border border-gray-100 rounded-md flex items-center justify-center p-1.5 flex-shrink-0 bg-white overflow-hidden">
                     <img
                       src={item.img}
                       alt={item.title}
-                      className={`max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105 ${item.img === tech7 ? 'scale-[1.3]' : ''
-                        }`}
+                      className={`max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105 `}
                     />
                   </div>
                   {/* Info details */}
@@ -478,6 +568,16 @@ const ProductDetails = ({ onNavigate }) => {
                     <span className="text-xs text-brand-gray mt-1 block font-medium">
                       {item.price}
                     </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(item, 1);
+                        alert('Added to cart!');
+                      }}
+                      className="mt-2 text-brand-blue text-[10px] font-bold border border-brand-blue px-2 py-0.5 rounded hover:bg-brand-blue hover:text-white transition-all uppercase"
+                    >
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               ))}
@@ -496,17 +596,14 @@ const ProductDetails = ({ onNavigate }) => {
               <div
                 key={p.id}
                 className="flex flex-col group cursor-pointer select-none"
-                onClick={() => onNavigate('product-details')}
+                onClick={() => onNavigate('product-details', { productId: p.id })}
               >
                 {/* Image wrapper */}
                 <div className="h-[140px] border border-gray-100 rounded-md flex items-center justify-center p-3 mb-3 bg-white overflow-hidden">
                   <img
                     src={p.img}
                     alt={p.title}
-                    className={`max-h-[90%] max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-110 ${p.img === tech7 ? 'scale-[1.35]' :
-                      p.img === tech8 ? 'scale-[1.35]' :
-                        p.img === tech4 ? 'scale-[1.35]' : ''
-                      }`}
+                    className={`max-h-[90%] max-w-[90%] object-contain transition-transform duration-300 group-hover:scale-110 `}
                   />
                 </div>
                 {/* Details */}
@@ -516,6 +613,16 @@ const ProductDetails = ({ onNavigate }) => {
                 <span className="text-sm font-semibold text-brand-gray mt-1">
                   {p.price}
                 </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addToCart(p, 1);
+                    alert('Added to cart!');
+                  }}
+                  className="mt-3 bg-white border border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-white transition-all text-[11px] font-bold py-1 px-2 rounded w-fit uppercase"
+                >
+                  Add to Cart
+                </button>
               </div>
             ))}
           </div>
