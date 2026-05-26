@@ -28,9 +28,10 @@ import interior1 from '../assets/Image/interior/1.png';
 import interior3 from '../assets/Image/interior/3.png';
 
 import { useCart } from './CartContext';
+import orderService from '../services/orderService';
 
 const Cart = ({ onNavigate }) => {
-  const { cartItems, removeFromCart, updateQuantity, clearCart, addToCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, clearCart, addToCart, cartTotal, cartCount } = useCart();
   const [savedItems, setSavedItems] = useState([]);
 
   const [couponCode, setCouponCode] = useState('');
@@ -38,9 +39,9 @@ const Cart = ({ onNavigate }) => {
   const [discountPercent, setDiscountPercent] = useState(0);
 
   // Math Calculations
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
-  const discountVal = couponApplied ? (subtotal * discountPercent) : 60.00; // default figma discount is $60
-  const tax = cartItems.length > 0 ? 14.00 : 0.00;
+  const subtotal = cartTotal || 0;
+  const discountVal = couponApplied ? (subtotal * discountPercent) : 0;
+  const tax = subtotal > 0 ? 14.00 : 0.00;
   const total = Math.max(0, subtotal - discountVal + tax);
 
   // Handlers
@@ -75,13 +76,18 @@ const Cart = ({ onNavigate }) => {
     clearCart();
   };
 
-  const applyCoupon = () => {
-    if (couponCode.toUpperCase() === 'ALIBABA') {
-      setDiscountPercent(0.15); // 15% discount
+  const applyCoupon = async () => {
+    if (!couponCode) return;
+
+    try {
+      const data = await orderService.validateCoupon(couponCode);
+      setDiscountPercent(data.discountPercent / 100); // DB gives e.g. 15.00 for 15%
       setCouponApplied(true);
-      alert('Success! 15% coupon applied.');
-    } else {
-      alert('Invalid coupon. Try ALIBABA');
+      alert(`Success! ${data.discountPercent}% discount applied.`);
+    } catch (error) {
+      setCouponApplied(false);
+      setDiscountPercent(0);
+      alert(error.message || 'Invalid coupon code');
     }
   };
 
@@ -99,7 +105,7 @@ const Cart = ({ onNavigate }) => {
 
         {/* Page Title - Desktop only */}
         <h1 className="hidden md:block text-xl md:text-2xl font-bold text-brand-dark mb-6 select-none px-4">
-          My cart ({cartItems.reduce((acc, i) => acc + i.qty, 0)})
+          My cart ({cartCount})
         </h1>
 
         {/* Outer Split Columns Grid */}
@@ -183,17 +189,17 @@ const Cart = ({ onNavigate }) => {
                           <div className="flex md:hidden items-center border border-[#e3e8ee] rounded overflow-hidden bg-white shadow-sm h-[32px]">
                             <button
                               className="px-3 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 border-r border-[#e3e8ee]"
-                              onClick={() => handleQtyChange(item.id, Math.max(1, item.qty - 1))}
-                              disabled={item.qty <= 1}
+                              onClick={() => handleQtyChange(item.id, Math.max(1, (item.quantity || item.qty || 1) - 1))}
+                              disabled={(item.quantity || item.qty) <= 1}
                             >
                               <Minus size={14} />
                             </button>
                             <div className="w-10 h-full flex items-center justify-center text-[14px] font-medium text-[#1c1c1c]">
-                              {item.qty}
+                              {item.quantity || item.qty}
                             </div>
                             <button
                               className="px-3 h-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer border-l border-[#e3e8ee]"
-                              onClick={() => handleQtyChange(item.id, item.qty + 1)}
+                              onClick={() => handleQtyChange(item.id, (item.quantity || item.qty || 0) + 1)}
                             >
                               <Plus size={14} />
                             </button>
@@ -202,7 +208,7 @@ const Cart = ({ onNavigate }) => {
                           {/* Dropdown box (Desktop only) */}
                           <div className="relative hidden md:block">
                             <select
-                              value={item.qty}
+                              value={item.quantity || item.qty}
                               onChange={(e) => handleQtyChange(item.id, e.target.value)}
                               className="appearance-none border border-gray-300 rounded-md pl-3 pr-8 py-1.5 text-sm bg-white outline-none cursor-pointer text-brand-dark font-medium hover:border-brand-blue transition-colors shadow-sm"
                             >
@@ -216,7 +222,7 @@ const Cart = ({ onNavigate }) => {
 
                         {/* Price (order 2 on mobile, 1 on desktop) */}
                         <span className="text-[15px] md:text-lg font-bold md:font-semibold text-[#1c1c1c] block order-2 md:order-1 mt-0 md:mb-1">
-                          ${(item.price * item.qty).toFixed(2)}
+                          ${(item.price * (item.quantity || item.qty)).toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -290,11 +296,11 @@ const Cart = ({ onNavigate }) => {
                   placeholder="Add coupon"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
-                  className="flex-1 px-3 py-2 outline-none text-brand-dark bg-white font-medium"
+                  className="flex-1 px-3 py-2 outline-none text-brand-dark bg-white font-medium focus:ring-1 focus:ring-brand-blue"
                 />
                 <button
                   onClick={applyCoupon}
-                  className="border-l border-gray-300 px-4 py-2 hover:bg-gray-50 text-brand-blue font-bold cursor-pointer transition-colors bg-white"
+                  className="border-l border-gray-300 px-4 py-2 hover:bg-gray-50 text-brand-blue font-bold cursor-pointer transition-colors bg-white shadow-sm active:bg-gray-100"
                 >
                   Apply
                 </button>
@@ -316,7 +322,7 @@ const Cart = ({ onNavigate }) => {
 
               {/* Mobile labels */}
               <div className="md:hidden flex justify-between items-center text-[#8b96a5]">
-                <span>Items ({cartItems.reduce((acc, i) => acc + i.qty, 0)}):</span>
+                <span>Items ({cartItems.reduce((acc, i) => acc + (i.quantity || i.qty || 0), 0)}):</span>
                 <span className="font-medium text-[#1c1c1c]">${subtotal.toFixed(2)}</span>
               </div>
               <div className="md:hidden flex justify-between items-center text-[#8b96a5]">
@@ -341,11 +347,11 @@ const Cart = ({ onNavigate }) => {
 
               {/* Green checkout button */}
               <button
-                onClick={() => alert('Order Placed Successfully! Thank you for shopping with us.')}
+                onClick={() => onNavigate('checkout')}
                 className="bg-[#00b517] hover:bg-[#009b13] text-white rounded-md py-3 md:py-3 text-center font-bold text-[15px] md:text-base cursor-pointer shadow-sm transition-colors w-full mt-4 md:mt-4"
               >
                 <span className="hidden md:inline">Checkout</span>
-                <span className="md:hidden">Checkout ({cartItems.reduce((acc, i) => acc + i.qty, 0)} items)</span>
+                <span className="md:hidden">Checkout ({cartItems.reduce((acc, i) => acc + (i.quantity || i.qty || 0), 0)} items)</span>
               </button>
 
               {/* Payments cards row (Desktop only) */}

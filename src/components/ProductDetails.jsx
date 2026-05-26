@@ -26,7 +26,7 @@ import { useCart } from './CartContext';
 const formatPrice = (price) => Number(price || 0).toFixed(2);
 
 const ProductDetails = ({ onNavigate, productId }) => {
-  const { addToCart } = useCart();
+  const { cartCount, addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState('');
   const [activeTab, setActiveTab] = useState('description');
@@ -166,7 +166,18 @@ const ProductDetails = ({ onNavigate, productId }) => {
                 <ArrowLeft size={22} />
               </button>
               <div className="flex items-center gap-4">
-                <ShoppingCart size={20} className="text-brand-dark cursor-pointer" onClick={() => onNavigate('cart')} />
+                <div className="relative">
+                  <ShoppingCart
+                    size={20}
+                    className="text-brand-dark cursor-pointer"
+                    onClick={() => onNavigate('cart')}
+                  />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-bold">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
                 <User size={20} className="text-brand-dark cursor-pointer hover:text-brand-blue" onClick={() => onNavigate('login')} />
               </div>
             </div>

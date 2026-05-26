@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from './AuthContext';
 
-const Login = ({ onNavigate }) => {
+const Login = ({ onNavigate, redirectTo }) => {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -24,11 +24,11 @@ const Login = ({ onNavigate }) => {
       }
 
       await login(email, password, { rememberMe });
-      
-      // Login successful, redirect to home
+
+      // Login successful, redirect to target page or home
       setEmail('');
       setPassword('');
-      onNavigate('home');
+      onNavigate(redirectTo || 'home');
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {
@@ -38,7 +38,7 @@ const Login = ({ onNavigate }) => {
 
   return (
     <div className="min-h-[80vh] bg-[#f7f8fa] flex flex-col justify-center items-center py-10 px-4 font-sans relative">
-      
+
       {/* Mobile Back Header */}
       <div className="absolute top-0 left-0 right-0 p-4 md:hidden flex items-center bg-white border-b border-gray-200 z-10">
         <button onClick={() => onNavigate('home')} className="text-brand-dark p-1 mr-3 cursor-pointer">
@@ -49,7 +49,7 @@ const Login = ({ onNavigate }) => {
 
       {/* Main Login Card */}
       <div className="w-full max-w-md bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mt-12 md:mt-0 animate-fade-in">
-        
+
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-brand-dark mb-2">Welcome back</h1>
           <p className="text-sm text-brand-gray">Sign in to your account to continue</p>
@@ -69,8 +69,8 @@ const Login = ({ onNavigate }) => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <Mail size={18} />
               </div>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 required
                 placeholder="Enter your email"
                 value={email}
@@ -91,8 +91,8 @@ const Login = ({ onNavigate }) => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                 <Lock size={18} />
               </div>
-              <input 
-                type={showPassword ? "text" : "password"} 
+              <input
+                type={showPassword ? "text" : "password"}
                 required
                 placeholder="Enter your password"
                 value={password}
@@ -100,7 +100,7 @@ const Login = ({ onNavigate }) => {
                 disabled={isLoading}
                 className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-md outline-none text-brand-dark focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all disabled:bg-gray-50"
               />
-              <div 
+              <div
                 className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-gray-400 hover:text-brand-dark transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
               >
@@ -111,19 +111,19 @@ const Login = ({ onNavigate }) => {
 
           {/* Remember Me */}
           <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="remember" 
+            <input
+              type="checkbox"
+              id="remember"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
               disabled={isLoading}
-              className="w-4 h-4 text-brand-blue border-gray-300 rounded cursor-pointer accent-brand-blue" 
+              className="w-4 h-4 text-brand-blue border-gray-300 rounded cursor-pointer accent-brand-blue"
             />
             <label htmlFor="remember" className="text-sm text-brand-gray cursor-pointer select-none">Remember me</label>
           </div>
 
           {/* Submit Button */}
-          <button 
+          <button
             type="submit"
             disabled={isLoading}
             className="w-full bg-brand-blue hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold py-2.5 rounded-md transition-colors mt-2 shadow-sm"
@@ -152,7 +152,7 @@ const Login = ({ onNavigate }) => {
 
         <div className="mt-8 text-center text-sm text-brand-gray">
           Don't have an account?{' '}
-          <span 
+          <span
             className="text-brand-blue font-bold cursor-pointer hover:underline"
             onClick={() => onNavigate('register')}
           >

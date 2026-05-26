@@ -7,13 +7,22 @@ import ProductDetails from './components/ProductDetails';
 import Cart from './components/Cart';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import Checkout from './components/Checkout';
 import Admin from './components/Admin/index.jsx';
-import { AuthProvider } from './components/Auth/AuthContext';
+import { AuthProvider, useAuth } from './components/Auth/AuthContext';
 import { CartProvider } from './components/CartContext';
 import './App.css';
 
 const AppContent = ({ currentPage, setCurrentPage, navigateTo }) => {
   const pageName = typeof currentPage === 'string' ? currentPage : currentPage?.name;
+  const { isAuthenticated } = useAuth();
+
+  // Protected Routes
+  useEffect(() => {
+    if (pageName === 'checkout' && !isAuthenticated) {
+      navigateTo('login', { redirectTo: 'checkout' });
+    }
+  }, [pageName, isAuthenticated, navigateTo]);
 
   return (
     <div className={`min-h-screen ${pageName === 'admin' ? 'bg-[#f1f5f9]' : 'bg-bg-main'} flex flex-col justify-between`}>
@@ -23,7 +32,8 @@ const AppContent = ({ currentPage, setCurrentPage, navigateTo }) => {
         {pageName === 'products' && <ProductList onNavigate={navigateTo} initialSearchQuery={currentPage?.searchQuery} />}
         {pageName === 'product-details' && <ProductDetails onNavigate={navigateTo} productId={currentPage.productId} />}
         {pageName === 'cart' && <Cart onNavigate={navigateTo} />}
-        {pageName === 'login' && <Login onNavigate={navigateTo} />}
+        {pageName === 'checkout' && isAuthenticated && <Checkout onNavigate={navigateTo} />}
+        {pageName === 'login' && <Login onNavigate={navigateTo} redirectTo={currentPage?.redirectTo} />}
         {pageName === 'register' && <Register onNavigate={navigateTo} />}
         {pageName === 'admin' && <Admin onNavigate={navigateTo} />}
       </div>
@@ -41,6 +51,7 @@ const App = () => {
       if (productDetailMatch) return { name: 'product-details', productId: productDetailMatch[1] };
       if (path === '/product-details') return 'product-details';
       if (path === '/cart') return 'cart';
+      if (path === '/checkout') return 'checkout';
       if (path === '/login') return 'login';
       if (path === '/register') return 'register';
       if (path === '/admin') return 'admin';
@@ -55,12 +66,15 @@ const App = () => {
     const pageName = getPageName(page);
     const productId = options.productId || page?.productId;
     const searchQuery = options.searchQuery || page?.searchQuery;
+    const redirectTo = options.redirectTo || page?.redirectTo;
 
     let nextPage = pageName;
     if (pageName === 'product-details' && productId) {
       nextPage = { name: 'product-details', productId };
     } else if (pageName === 'products' && searchQuery) {
       nextPage = { name: 'products', searchQuery };
+    } else if (pageName === 'login' && redirectTo) {
+      nextPage = { name: 'login', redirectTo };
     }
 
     setCurrentPage(nextPage);
@@ -68,6 +82,7 @@ const App = () => {
     if (pageName === 'products') newPath = '/products';
     else if (pageName === 'product-details') newPath = productId ? `/product-details/${productId}` : '/product-details';
     else if (pageName === 'cart') newPath = '/cart';
+    else if (pageName === 'checkout') newPath = '/checkout';
     else if (pageName === 'login') newPath = '/login';
     else if (pageName === 'register') newPath = '/register';
     else if (pageName === 'admin') newPath = '/admin';
@@ -86,6 +101,7 @@ const App = () => {
         const path = window.location.pathname;
         const productDetailMatch = path.match(/^\/product-details\/([^/]+)$/);
         if (path === '/products') setCurrentPage('products');
+        else if (path === '/checkout') setCurrentPage('checkout');
         else if (productDetailMatch) setCurrentPage({ name: 'product-details', productId: productDetailMatch[1] });
         else if (path === '/product-details') setCurrentPage('product-details');
         else if (path === '/cart') setCurrentPage('cart');

@@ -33,8 +33,9 @@ const Header = ({ onNavigate, currentPage }) => {
     if (onNavigate) onNavigate('home');
   };
 
-  const handleProductsClick = (query = searchQuery) => {
-    if (onNavigate) onNavigate('products', { searchQuery: query });
+  const handleProductsClick = (query) => {
+    const finalQuery = typeof query === 'string' ? query : searchQuery;
+    if (onNavigate) onNavigate('products', { searchQuery: finalQuery });
   };
 
   const handleDrawerNav = (page) => {

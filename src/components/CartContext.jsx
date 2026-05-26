@@ -25,7 +25,7 @@ export const CartProvider = ({ children }) => {
             const existingItem = prev.find((item) => item.id === product.id);
             if (existingItem) {
                 return prev.map((item) =>
-                    item.id === product.id ? { ...item, qty: item.qty + quantity } : item
+                    item.id === product.id ? { ...item, quantity: (item.quantity || item.qty) + quantity } : item
                 );
             }
             return [
@@ -35,7 +35,7 @@ export const CartProvider = ({ children }) => {
                     title: product.title,
                     price: product.price,
                     img: product.imageUrl || product.img,
-                    qty: quantity,
+                    quantity: quantity,
                     size: 'medium', // Default values
                     color: 'blue',
                     material: 'Plastic',
@@ -51,7 +51,7 @@ export const CartProvider = ({ children }) => {
 
     const updateQuantity = (id, quantity) => {
         setCartItems((prev) =>
-            prev.map((item) => (item.id === id ? { ...item, qty: quantity } : item))
+            prev.map((item) => (item.id === id ? { ...item, quantity: quantity } : item))
         );
     };
 
@@ -59,7 +59,8 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
     };
 
-    const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+    const cartCount = cartItems.reduce((acc, item) => acc + (item.quantity || item.qty || 0), 0);
+    const cartTotal = cartItems.reduce((acc, item) => acc + (item.price * (item.quantity || item.qty || 0)), 0);
 
     return (
         <CartContext.Provider
@@ -70,6 +71,7 @@ export const CartProvider = ({ children }) => {
                 updateQuantity,
                 clearCart,
                 cartCount,
+                cartTotal,
             }}
         >
             {children}

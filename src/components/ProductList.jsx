@@ -22,7 +22,7 @@ import { useCart } from './CartContext';
 const formatPrice = (price) => Number(price || 0).toFixed(2);
 
 const ProductList = ({ onNavigate, initialSearchQuery = '' }) => {
-  const { addToCart } = useCart();
+  const { cartCount, addToCart } = useCart();
   const [viewType, setViewType] = useState('list'); // 'list' or 'grid'
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [apiProducts, setApiProducts] = useState([]);
@@ -124,7 +124,7 @@ const ProductList = ({ onNavigate, initialSearchQuery = '' }) => {
     let filtered = [...apiProducts];
 
     // Search Query Filter
-    if (searchQuery) {
+    if (searchQuery && typeof searchQuery === 'string') {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(p =>
         p.title?.toLowerCase().includes(query) ||
@@ -251,7 +251,18 @@ const ProductList = ({ onNavigate, initialSearchQuery = '' }) => {
             </button>
             <h2 className="text-base font-semibold text-brand-dark">Mobile accessory</h2>
             <div className="flex items-center gap-3">
-              <ShoppingCart size={20} className="text-brand-dark cursor-pointer" onClick={() => onNavigate('cart')} />
+              <div className="relative">
+                <ShoppingCart
+                  size={20}
+                  className="text-brand-dark cursor-pointer"
+                  onClick={() => onNavigate('cart')}
+                />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full font-bold">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
               <User size={20} className="text-brand-dark cursor-pointer" />
             </div>
           </div>
