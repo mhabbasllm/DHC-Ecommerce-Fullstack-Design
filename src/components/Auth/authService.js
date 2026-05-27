@@ -50,7 +50,7 @@ const getErrorMessage = async (response, fallbackMessage) => {
 
 const authService = {
   // Register a new user
-  register: async (fullName, email, password, gender = 'Other') => {
+  register: async (firstName, lastName, email, password, gender = 'Other') => {
     try {
       const response = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',
@@ -58,7 +58,8 @@ const authService = {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          fullName,
+          firstName,
+          lastName,
           email,
           password,
           gender,

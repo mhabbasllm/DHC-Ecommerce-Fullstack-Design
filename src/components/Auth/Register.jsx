@@ -5,7 +5,8 @@ import { useAuth } from './AuthContext';
 const Register = ({ onNavigate }) => {
   const { register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [gender, setGender] = useState('Male');
@@ -21,7 +22,7 @@ const Register = ({ onNavigate }) => {
     setIsLoading(true);
 
     try {
-      if (!fullName || !email || !password) {
+      if (!firstName || !lastName || !email || !password) {
         setError('All fields are required');
         setIsLoading(false);
         return;
@@ -39,9 +40,10 @@ const Register = ({ onNavigate }) => {
         return;
       }
 
-      await register(fullName, email, password, gender);
+      await register(firstName, lastName, email, password, gender);
 
-      setFullName('');
+      setFirstName('');
+      setLastName('');
       setEmail('');
       setPassword('');
       setTermsAccepted(false);
@@ -88,22 +90,44 @@ const Register = ({ onNavigate }) => {
           </div>
         )}
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {/* Name Input */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-brand-dark">Full name</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                <User size={18} />
+          {/* Name Inputs Row */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            {/* First Name */}
+            <div className="flex-1 flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-brand-dark">First name</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                  <User size={18} />
+                </div>
+                <input
+                  type="text"
+                  required
+                  placeholder="First name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md outline-none text-brand-dark focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all disabled:bg-gray-50"
+                />
               </div>
-              <input
-                type="text"
-                required
-                placeholder="Enter your name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                disabled={isLoading}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md outline-none text-brand-dark focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all disabled:bg-gray-50"
-              />
+            </div>
+
+            {/* Last Name */}
+            <div className="flex-1 flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-brand-dark">Last name</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                  <User size={18} />
+                </div>
+                <input
+                  type="text"
+                  required
+                  placeholder="Last name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md outline-none text-brand-dark focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all disabled:bg-gray-50"
+                />
+              </div>
             </div>
           </div>
 
