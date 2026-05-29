@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useCart } from './CartContext';
 import orderService from '../services/orderService';
+import Swal from 'sweetalert2';
 
 const Checkout = ({ onNavigate }) => {
     const { cartItems, cartTotal, clearCart } = useCart();
@@ -61,9 +62,24 @@ const Checkout = ({ onNavigate }) => {
             setOrderPlaced(true);
             clearCart();
 
-            setTimeout(() => {
-                onNavigate('home');
-            }, 5000);
+            Swal.fire({
+                title: 'Order Successful!',
+                text: 'Your order has been placed successfully.',
+                icon: 'success',
+                confirmButtonText: 'View My Orders',
+                confirmButtonColor: '#7c3aed',
+                timer: 5000,
+                timerProgressBar: true,
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            }).then((result) => {
+                onNavigate('orders');
+            });
+
         } catch (err) {
             setError(err.message || 'Failed to place order. Please try again.');
         } finally {

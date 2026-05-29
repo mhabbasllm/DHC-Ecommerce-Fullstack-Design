@@ -103,6 +103,30 @@ const orderService = {
       console.error('Coupon validation failed:', error);
       throw error;
     }
+  },
+
+  // Get user orders
+  getUserOrders: async () => {
+    const token = authService.getToken();
+    if (!token) throw new Error('You must be logged in to view your orders.');
+
+    try {
+      const response = await fetch(ORDER_URL, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch orders');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to get orders:', error);
+      throw error;
+    }
   }
 };
 
